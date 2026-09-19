@@ -1,0 +1,45 @@
+{
+  "maxErgebnisse": 4,
+  "stellenangebote": [
+    {
+      "beruf": "Bäcker/in",
+      "titel": "Ausbildung zum Bäcker (m/w/d) 2027",
+      "refnr": "10000-1111111111-S",
+      "arbeitgeber": "Bäckerei Müller GmbH",
+      "arbeitsort": {
+        "plz": "71332",
+        "ort": "Waiblingen",
+        "region": "Baden-Württemberg",
+        "strasse": "Hauptstraße 1",
+        "koordinaten": { "lat": 48.8303, "lon": 9.3169 }
+      },
+      "aktuelleVeroeffentlichungsdatum": "2026-09-01",
+      "eintrittsdatum": "2027-09-01",
+      "kundennummerHash": "hash-mueller"
+    },
+    {
+      "beruf": "Konditor/in",
+      "titel": "Ausbildung Konditor/-in",
+      "refnr": "10000-2222222222-S",
+      "arbeitgeber": "Baeckerei Mueller GmbH & Co. KG",
+      "arbeitsort": { "plz": "71332", "ort": "Waiblingen", "region": "Baden-Württemberg" },
+      "aktuelleVeroeffentlichungsdatum": "2026-09-05"
+    },
+    {
+      "beruf": "Kfz-Mechatroniker/in",
+      "titel": "Ausbildung Kfz-Mechatroniker/in",
+      "refnr": "10000-3333333333-S",
+      "arbeitgeber": "Autohaus Abel e.K.",
+      "arbeitsort": { "plz": "71522", "ort": "Backnang", "region": "Baden-Württemberg" },
+      "aktuelleVeroeffentlichungsdatum": "2026-08-20"
+    },
+    {
+      "beruf": "Industriekaufmann/-frau",
+      "titel": "Ausbildung Industriekaufleute",
+      "refnr": "10000-4444444444-S",
+      "arbeitgeber": "",
+      "arbeitsort": { "plz": "70173", "ort": "Stuttgart", "region": "Baden-Württemberg" },
+      "aktuelleVeroeffentlichungsdatum": "2026-09-10"
+    }
+  ]
+}

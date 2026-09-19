@@ -1,0 +1,274 @@
+<!doctype html>
+<html lang="de">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Ausbildungsbetriebe</title>
+    <style>
+      :root {
+        --hintergrund: #f7f7f5;
+        --flaeche: #ffffff;
+        --rand: #e2e1dc;
+        --text: #1f1e1b;
+        --text-leise: #6b6960;
+        --akzent: #8a5a2b;
+        --akzent-flaeche: #f3ebe2;
+      }
+      @media (prefers-color-scheme: dark) {
+        :root:not([data-theme='light']) {
+          --hintergrund: #161513;
+          --flaeche: #1f1e1b;
+          --rand: #34322d;
+          --text: #f2f0ea;
+          --text-leise: #a3a096;
+          --akzent: #d8a76a;
+          --akzent-flaeche: #2b251d;
+        }
+      }
+      * { box-sizing: border-box; }
+      body {
+        margin: 0;
+        padding: 24px 16px 64px;
+        background: var(--hintergrund);
+        color: var(--text);
+        font: 15px/1.5 ui-sans-serif, system-ui, -apple-system, 'Segoe UI', sans-serif;
+      }
+      .huelle { max-width: 1100px; margin: 0 auto; }
+      h1 { font-size: 1.5rem; margin: 0 0 4px; }
+      .unterzeile { color: var(--text-leise); margin: 0 0 24px; }
+      .kacheln { display: flex; flex-wrap: wrap; gap: 12px; margin-bottom: 24px; }
+      .kachel {
+        flex: 1 1 150px;
+        background: var(--flaeche);
+        border: 1px solid var(--rand);
+        border-radius: 10px;
+        padding: 12px 14px;
+      }
+      .kachel b { display: block; font-size: 1.6rem; font-weight: 600; line-height: 1.2; }
+      .kachel span { color: var(--text-leise); font-size: 0.85rem; }
+      .filter { display: flex; flex-wrap: wrap; gap: 10px; margin-bottom: 16px; }
+      input, select, button {
+        font: inherit;
+        color: var(--text);
+        background: var(--flaeche);
+        border: 1px solid var(--rand);
+        border-radius: 8px;
+        padding: 8px 10px;
+      }
+      input[type='search'] { flex: 1 1 260px; }
+      button { cursor: pointer; }
+      button.haupt { background: var(--akzent-flaeche); border-color: var(--akzent); color: var(--akzent); }
+      label.schalter { display: flex; align-items: center; gap: 6px; color: var(--text-leise); }
+      table { width: 100%; border-collapse: collapse; background: var(--flaeche); border: 1px solid var(--rand); border-radius: 10px; overflow: hidden; }
+      th, td { text-align: left; padding: 10px 12px; border-bottom: 1px solid var(--rand); vertical-align: top; }
+      th { font-size: 0.8rem; text-transform: uppercase; letter-spacing: 0.04em; color: var(--text-leise); font-weight: 600; }
+      tr:last-child td { border-bottom: none; }
+      .berufe { color: var(--text-leise); font-size: 0.9rem; }
+      .marke { display: inline-block; font-size: 0.75rem; padding: 1px 7px; border-radius: 999px; background: var(--akzent-flaeche); color: var(--akzent); margin-right: 4px; }
+      .leer { padding: 32px; text-align: center; color: var(--text-leise); }
+      @media (max-width: 640px) {
+        th:nth-child(4), td:nth-child(4) { display: none; }
+      }
+    </style>
+  </head>
+  <body>
+    <div class="huelle">
+      <h1>Ausbildungsbetriebe der Region</h1>
+      <p class="unterzeile" id="unterzeile">Bestand wird geladen …</p>
+
+      <div class="kacheln">
+        <div class="kachel"><b id="zahl-betriebe">–</b><span>Betriebe im Bestand</span></div>
+        <div class="kachel"><b id="zahl-berufe">–</b><span>verschiedene Ausbildungsberufe</span></div>
+        <div class="kachel"><b id="zahl-orte">–</b><span>Orte</span></div>
+        <div class="kachel"><b id="zahl-ruhend">–</b><span>seit über 60 Tagen ohne Anzeige</span></div>
+      </div>
+
+      <div class="filter">
+        <input type="search" id="suche" placeholder="Betrieb, Beruf oder Ort suchen …" />
+        <select id="ort"><option value="">Alle Orte</option></select>
+        <select id="beruf"><option value="">Alle Berufe</option></select>
+        <select id="jahr"><option value="">Alle Jahre</option></select>
+        <label class="schalter"><input type="checkbox" id="nur-ruhend" /> nur ohne aktuelle Anzeige</label>
+        <button class="haupt" id="export">Auswahl als CSV</button>
+      </div>
+
+      <table>
+        <thead>
+          <tr>
+            <th>Betrieb</th>
+            <th>Ort</th>
+            <th>Ausbildungsberufe</th>
+            <th>Zuletzt ausgeschrieben</th>
+          </tr>
+        </thead>
+        <tbody id="zeilen"></tbody>
+      </table>
+      <div class="leer" id="leer" hidden>Keine Betriebe für diese Auswahl.</div>
+    </div>
+
+    <script type="module">
+      const RUHEND_AB_TAGEN = 60;
+
+      const elemente = {
+        unterzeile: document.getElementById('unterzeile'),
+        suche: document.getElementById('suche'),
+        ort: document.getElementById('ort'),
+        beruf: document.getElementById('beruf'),
+        jahr: document.getElementById('jahr'),
+        nurRuhend: document.getElementById('nur-ruhend'),
+        export: document.getElementById('export'),
+        zeilen: document.getElementById('zeilen'),
+        leer: document.getElementById('leer'),
+      };
+
+      let betriebe = [];
+
+      function tageSeit(datum) {
+        if (!datum) return Infinity;
+        return Math.floor((Date.now() - new Date(`${datum}T00:00:00Z`).getTime()) / 86400000);
+      }
+
+      function fuelleAuswahl(feld, werte) {
+        for (const wert of [...new Set(werte)].filter(Boolean).sort((a, b) => a.localeCompare(b, 'de'))) {
+          const option = document.createElement('option');
+          option.value = wert;
+          option.textContent = wert;
+          feld.append(option);
+        }
+      }
+
+      function gefiltert() {
+        const suchtext = elemente.suche.value.trim().toLowerCase();
+        return betriebe.filter((betrieb) => {
+          if (elemente.ort.value && betrieb.ort !== elemente.ort.value) return false;
+          if (elemente.jahr.value && !(betrieb.jahre ?? []).includes(elemente.jahr.value)) return false;
+          if (elemente.beruf.value && !(betrieb.berufe ?? []).some((e) => e.beruf === elemente.beruf.value)) return false;
+          if (elemente.nurRuhend.checked && tageSeit(betrieb.zuletztGesehen) < RUHEND_AB_TAGEN) return false;
+          if (!suchtext) return true;
+          const heuhaufen = [
+            betrieb.arbeitgeber,
+            betrieb.ort,
+            ...(betrieb.schreibweisen ?? []),
+            ...(betrieb.berufe ?? []).map((e) => e.beruf),
+          ]
+            .join(' ')
+            .toLowerCase();
+          return heuhaufen.includes(suchtext);
+        });
+      }
+
+      function zeichne() {
+        const auswahl = gefiltert();
+        elemente.zeilen.replaceChildren();
+        elemente.leer.hidden = auswahl.length > 0;
+
+        for (const betrieb of auswahl) {
+          const zeile = document.createElement('tr');
+
+          const name = document.createElement('td');
+          name.innerHTML = `<strong>${escapeHtml(betrieb.arbeitgeber)}</strong>`;
+          if ((betrieb.quellen ?? []).some((quelle) => quelle !== 'ba-jobsuche')) {
+            const marke = document.createElement('span');
+            marke.className = 'marke';
+            marke.textContent = betrieb.quellen.filter((q) => q !== 'ba-jobsuche').join(', ');
+            name.append(document.createElement('br'), marke);
+          }
+          if (betrieb.notiz) {
+            const notiz = document.createElement('div');
+            notiz.className = 'berufe';
+            notiz.textContent = betrieb.notiz;
+            name.append(notiz);
+          }
+
+          const ort = document.createElement('td');
+          ort.textContent = [betrieb.plz, betrieb.ort].filter(Boolean).join(' ');
+
+          const berufe = document.createElement('td');
+          berufe.className = 'berufe';
+          berufe.textContent = (betrieb.berufe ?? []).map((e) => e.beruf).join(' · ');
+
+          const datum = document.createElement('td');
+          const tage = tageSeit(betrieb.zuletztGesehen);
+          datum.textContent = betrieb.zuletztGesehen ?? '–';
+          if (Number.isFinite(tage)) {
+            const zusatz = document.createElement('div');
+            zusatz.className = 'berufe';
+            zusatz.textContent = tage < RUHEND_AB_TAGEN ? 'aktuell ausgeschrieben' : `vor ${tage} Tagen`;
+            datum.append(zusatz);
+          }
+
+          zeile.append(name, ort, berufe, datum);
+          elemente.zeilen.append(zeile);
+        }
+
+        elemente.unterzeile.textContent = `${auswahl.length} von ${betriebe.length} Betrieben`;
+      }
+
+      function escapeHtml(text) {
+        return String(text ?? '').replace(/[&<>"']/g, (zeichen) =>
+          ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' })[zeichen],
+        );
+      }
+
+      function csvFeld(wert) {
+        const text = String(wert ?? '');
+        return /[";\n]/.test(text) ? `"${text.replace(/"/g, '""')}"` : text;
+      }
+
+      elemente.export.addEventListener('click', () => {
+        const kopf = ['Arbeitgeber', 'PLZ', 'Ort', 'Strasse', 'Ausbildungsberufe', 'ZuletztGesehen', 'Quellen', 'Notiz'];
+        const zeilen = gefiltert().map((betrieb) =>
+          [
+            betrieb.arbeitgeber,
+            betrieb.plz,
+            betrieb.ort,
+            betrieb.strasse,
+            (betrieb.berufe ?? []).map((e) => e.beruf).join(' | '),
+            betrieb.zuletztGesehen,
+            (betrieb.quellen ?? []).join(' '),
+            betrieb.notiz ?? '',
+          ]
+            .map(csvFeld)
+            .join(';'),
+        );
+        const blob = new Blob([`﻿${[kopf.join(';'), ...zeilen].join('\n')}\n`], {
+          type: 'text/csv;charset=utf-8',
+        });
+        const verweis = document.createElement('a');
+        verweis.href = URL.createObjectURL(blob);
+        verweis.download = 'ausbildungsbetriebe-auswahl.csv';
+        verweis.click();
+        URL.revokeObjectURL(verweis.href);
+      });
+
+      for (const feld of [elemente.suche, elemente.ort, elemente.beruf, elemente.jahr, elemente.nurRuhend]) {
+        feld.addEventListener('input', zeichne);
+      }
+
+      try {
+        const antwort = await fetch('../daten/betriebe.json', { cache: 'no-store' });
+        if (!antwort.ok) throw new Error(`HTTP ${antwort.status}`);
+        const bestand = await antwort.json();
+        betriebe = bestand.betriebe ?? [];
+
+        fuelleAuswahl(elemente.ort, betriebe.map((betrieb) => betrieb.ort));
+        fuelleAuswahl(elemente.beruf, betriebe.flatMap((betrieb) => (betrieb.berufe ?? []).map((e) => e.beruf)));
+        fuelleAuswahl(elemente.jahr, betriebe.flatMap((betrieb) => betrieb.jahre ?? []));
+
+        document.getElementById('zahl-betriebe').textContent = betriebe.length;
+        document.getElementById('zahl-berufe').textContent = new Set(
+          betriebe.flatMap((betrieb) => (betrieb.berufe ?? []).map((e) => e.normalisiert)),
+        ).size;
+        document.getElementById('zahl-orte').textContent = new Set(betriebe.map((betrieb) => betrieb.ort)).size;
+        document.getElementById('zahl-ruhend').textContent = betriebe.filter(
+          (betrieb) => tageSeit(betrieb.zuletztGesehen) >= RUHEND_AB_TAGEN,
+        ).length;
+
+        zeichne();
+      } catch (fehler) {
+        elemente.unterzeile.textContent =
+          'Bestand konnte nicht geladen werden. Läuft die Seite über „npm run web“? ' + fehler.message;
+      }
+    </script>
+  </body>
+</html>

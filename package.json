@@ -1,0 +1,18 @@
+{
+  "name": "ausbildungsbetriebe",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "description": "Sammelt ausbildende Betriebe der Region Stuttgart/Rems-Murr aus der BA-Jobsuche und baut daraus einen dauerhaften Bestand für Initiativbewerbungen.",
+  "engines": {
+    "node": ">=20"
+  },
+  "scripts": {
+    "sammeln": "node src/sammeln.mjs",
+    "sammeln:trocken": "node src/sammeln.mjs --trocken",
+    "export": "node src/export-csv.mjs",
+    "import": "node src/import-csv.mjs",
+    "web": "node src/web-server.mjs",
+    "test": "node --test test/*.test.mjs"
+  }
+}
