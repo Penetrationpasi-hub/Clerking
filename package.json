@@ -12,6 +12,7 @@
     "sammeln:trocken": "node src/sammeln.mjs --trocken",
     "export": "node src/export-csv.mjs",
     "import": "node src/import-csv.mjs",
+    "hinzufuegen": "node src/manuell-hinzufuegen.mjs",
     "web": "node src/web-server.mjs",
     "test": "node --test test/*.test.mjs"
   }

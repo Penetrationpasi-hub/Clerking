@@ -1,0 +1,95 @@
+name: Betrieb manuell hinzufügen
+
+# Für Betriebe, die nicht über die BA-Jobsuche kommen — telefonisch
+# gefunden, über die eigene Karriereseite, oder ein einzelner Betrieb aus
+# einer Kammer-Liste. Kein Terminal, kein Git nötig: Reiter „Actions" →
+# dieser Workflow → „Run workflow" → Felder ausfüllen → „Run workflow".
+# Für mehrere Betriebe auf einmal eignet sich stattdessen
+# `node src/import-csv.mjs` mit einer CSV-Datei (siehe README).
+
+on:
+  workflow_dispatch:
+    inputs:
+      arbeitgeber:
+        description: 'Name des Betriebs (erforderlich)'
+        required: true
+      ort:
+        description: 'Ort (erforderlich)'
+        required: true
+      beruf:
+        description: 'Ausbildungsberuf(e), mehrere mit | trennen'
+        required: false
+      webseite:
+        description: 'Link zur Job-/Karriereseite (optional)'
+        required: false
+      plz:
+        description: 'PLZ (optional)'
+        required: false
+      quelle:
+        description: 'Woher stammt der Betrieb, z. B. hwk-stuttgart, telefonat'
+        required: false
+        default: 'eigene-recherche'
+      notiz:
+        description: 'Notiz, z. B. Ansprechpartner oder Telefonnummer (optional)'
+        required: false
+
+permissions:
+  contents: write
+
+jobs:
+  hinzufuegen:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+
+      - name: Tests
+        run: node --test test/*.test.mjs
+
+      # Eingaben laufen über Umgebungsvariablen, nicht über direkte
+      # ${{ inputs.* }}-Einsetzung im Skript — sonst könnte ein Eingabefeld
+      # mit Anführungszeichen oder Backticks eigenen Shell-Code einschleusen.
+      - name: Betrieb eintragen
+        env:
+          ARBEITGEBER: ${{ inputs.arbeitgeber }}
+          ORT: ${{ inputs.ort }}
+          BERUF: ${{ inputs.beruf }}
+          WEBSEITE: ${{ inputs.webseite }}
+          PLZ: ${{ inputs.plz }}
+          QUELLE: ${{ inputs.quelle }}
+          NOTIZ: ${{ inputs.notiz }}
+        run: |
+          node src/manuell-hinzufuegen.mjs \
+            --arbeitgeber "$ARBEITGEBER" \
+            --ort "$ORT" \
+            --beruf "$BERUF" \
+            --webseite "$WEBSEITE" \
+            --plz "$PLZ" \
+            --quelle "$QUELLE" \
+            --notiz "$NOTIZ"
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      - name: Excel-Übersicht aktualisieren
+        run: |
+          pip install --quiet openpyxl
+          python3 scripts/export-xlsx.py
+
+      - name: Committen
+        env:
+          ARBEITGEBER: ${{ inputs.arbeitgeber }}
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add daten
+          if git diff --staged --quiet; then
+            echo "Keine Änderungen."
+          else
+            git commit -m "Betrieb manuell hinzugefügt: $ARBEITGEBER"
+            git push
+          fi

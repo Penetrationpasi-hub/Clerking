@@ -102,6 +102,23 @@ committet.
 nur der manuelle Start über *Actions → Ausbildungsbetriebe sammeln → Run
 workflow*.
 
+## Einen einzelnen Betrieb von Hand eintragen — ohne Terminal
+
+Für einen Betrieb, der telefonisch gefunden wurde oder über seine eigene
+Karriereseite: **Reiter „Actions" → „Betrieb manuell hinzufügen" →
+„Run workflow"**. Es öffnet sich ein Formular (Arbeitgeber, Ort, Beruf,
+Webseite, Notiz) — kein Terminal, kein Git, keine Datei anlegen. Der Lauf
+prüft, trägt ein, baut CSV und Excel neu und committet das Ergebnis, genau
+wie der tägliche Sammellauf.
+
+Der Link landet als eigene Spalte `Webseite` in CSV und Excel (dort
+klickbar) und in der Web-Ansicht direkt als Link auf den Firmennamen. Er
+ersetzt nicht Name und Ort — die bleiben der Schlüssel, über den ein Betrieb
+wiedererkannt wird, falls er später auch über die BA-Jobsuche auftaucht.
+
+**Für mehrere Betriebe auf einmal** (z. B. eine ganze Kammer-Liste) eignet
+sich das Formular nicht — dafür der nächste Abschnitt.
+
 ## Kammer-Listen dazunehmen
 
 Der schnellste Weg zu den kleinen Betrieben, die nie eine Anzeige schalten,
@@ -115,8 +132,9 @@ führt nicht über einen Crawler, sondern über ein Telefonat:
   ausgeschriebene Stelle.
 
 Als Maßnahmeträger nach § 45 SGB III mit Vermittlungsauftrag anrufen und
-sagen, wofür die Daten gebraucht werden. Was dabei herauskommt, kommt hier
-in denselben Bestand:
+sagen, wofür die Daten gebraucht werden. Was dabei herauskommt, braucht —
+anders als ein einzelner Betrieb oben — ein Terminal mit Node, weil es eine
+ganze Datei ist:
 
 ```bash
 node src/import-csv.mjs hwk-liste.csv --quelle hwk-stuttgart
@@ -128,26 +146,6 @@ Erkannt werden `Arbeitgeber`/`Firma`/`Betrieb`, `Ort`/`Stadt`, `PLZ`,
 Trennzeichen. Was über Name + Ort auf einen vorhandenen Betrieb passt, wird
 zusammengeführt statt doppelt angelegt; die Quelle steht danach am
 Datensatz.
-
-## Einen einzelnen Betrieb von Hand eintragen
-
-Genauso läuft es, wenn ein Betrieb nicht aus einer Kammer-Liste kommt,
-sondern z. B. telefonisch gefunden wurde oder über seine eigene
-Karriereseite: eine CSV mit einer einzigen Zeile reicht.
-
-```
-Arbeitgeber;Ort;Beruf;Webseite
-Schreinerei Vogt;Waiblingen;Schreiner/in;https://schreinerei-vogt.de/jobs
-```
-
-```bash
-node src/import-csv.mjs schreinerei-vogt.csv --quelle eigene-recherche
-```
-
-Der Link landet als eigene Spalte `Webseite` in CSV und Excel (dort
-klickbar) und in der Web-Ansicht direkt als Link auf den Firmennamen. Er
-ersetzt nicht Name und Ort — die bleiben der Schlüssel, über den ein Betrieb
-wiedererkannt wird, falls er später auch über die BA-Jobsuche auftaucht.
 
 ## Grenzen — ehrlich
 
