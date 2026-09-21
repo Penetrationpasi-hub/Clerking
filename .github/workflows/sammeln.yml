@@ -33,6 +33,15 @@ jobs:
       - name: Sammellauf
         run: node src/sammeln.mjs
 
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      - name: Excel-Übersicht bauen
+        run: |
+          pip install --quiet openpyxl
+          python3 scripts/export-xlsx.py
+
       - name: Neue Betriebe committen
         run: |
           git config user.name "github-actions[bot]"

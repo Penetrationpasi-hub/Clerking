@@ -24,6 +24,33 @@ npm run web                      # Liste im Browser ansehen
 npm test                         # 30 Tests
 ```
 
+## Die Übersicht ansehen
+
+GitHub zeigt eine CSV mit über 2000 Zeilen nur noch als rohen Text an, nicht
+mehr als hübsche Tabelle — das sieht auf dem Handy wie kaputte Daten aus, ist
+aber nur die Vorschau-Grenze der Weboberfläche.
+
+Die eigentliche Übersicht ist **`daten/Ausbildungsbetriebe.xlsx`**: fertig
+formatiert, mit Autofilter, fixierter Kopfzeile und gelb markierten Betrieben
+ohne aktuelle Anzeige (das ist die Gruppe für Initiativbewerbungen). Sie wird
+bei jedem täglichen Sammellauf automatisch neu erzeugt.
+
+So kommt sie aufs Handy:
+1. Die Datei im Repository öffnen: `daten/Ausbildungsbetriebe.xlsx`
+2. Oben rechts auf die drei Punkte (`⋯`) tippen → **„Download raw file"**
+3. In Excel, Google Sheets oder Numbers öffnen
+
+Oder direkt herunterladen über:
+```
+https://github.com/Penetrationpasi-hub/Clerking/raw/main/daten/Ausbildungsbetriebe.xlsx
+```
+
+Von Hand neu erzeugen (z. B. nach einem Kammer-Import):
+```bash
+pip install openpyxl
+python3 scripts/export-xlsx.py
+```
+
 ## Was wo liegt
 
 ```
@@ -33,9 +60,10 @@ src/normalisieren.mjs Schreibweisen zusammenführen
 src/speicher.mjs     Bestand fortschreiben
 src/sammeln.mjs      Sammellauf (CLI)
 src/import-csv.mjs   Kammer-Listen einlesen
-daten/betriebe.json  der Bestand — die eigentliche Sache
-daten/betriebe.csv   dasselbe für Excel (Semikolon + BOM)
-daten/historie.jsonl Protokoll: was wurde wann zum ersten Mal gesehen
+daten/betriebe.json           der Bestand — die eigentliche Sache
+daten/betriebe.csv            dasselbe als Semikolon-CSV (BOM für Excel)
+daten/Ausbildungsbetriebe.xlsx fertig formatierte Excel-Übersicht, täglich neu erzeugt
+daten/historie.jsonl           Protokoll: was wurde wann zum ersten Mal gesehen
 web/index.html       Ansicht zum Filtern und Exportieren
 ```
 
