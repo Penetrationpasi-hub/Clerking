@@ -166,7 +166,11 @@
           const zeile = document.createElement('tr');
 
           const name = document.createElement('td');
-          name.innerHTML = `<strong>${escapeHtml(betrieb.arbeitgeber)}</strong>`;
+          if (betrieb.externeUrl) {
+            name.innerHTML = `<strong><a href="${escapeHtml(betrieb.externeUrl)}" target="_blank" rel="noopener">${escapeHtml(betrieb.arbeitgeber)}</a></strong>`;
+          } else {
+            name.innerHTML = `<strong>${escapeHtml(betrieb.arbeitgeber)}</strong>`;
+          }
           if ((betrieb.quellen ?? []).some((quelle) => quelle !== 'ba-jobsuche')) {
             const marke = document.createElement('span');
             marke.className = 'marke';
@@ -216,7 +220,7 @@
       }
 
       elemente.export.addEventListener('click', () => {
-        const kopf = ['Arbeitgeber', 'PLZ', 'Ort', 'Strasse', 'Ausbildungsberufe', 'ZuletztGesehen', 'Quellen', 'Notiz'];
+        const kopf = ['Arbeitgeber', 'PLZ', 'Ort', 'Strasse', 'Ausbildungsberufe', 'ZuletztGesehen', 'Quellen', 'Webseite', 'Notiz'];
         const zeilen = gefiltert().map((betrieb) =>
           [
             betrieb.arbeitgeber,
@@ -226,6 +230,7 @@
             (betrieb.berufe ?? []).map((e) => e.beruf).join(' | '),
             betrieb.zuletztGesehen,
             (betrieb.quellen ?? []).join(' '),
+            betrieb.externeUrl ?? '',
             betrieb.notiz ?? '',
           ]
             .map(csvFeld)

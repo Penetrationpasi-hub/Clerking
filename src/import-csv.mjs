@@ -14,6 +14,14 @@
 //   PLZ | Postleitzahl              → PLZ
 //   Strasse | Straße | Adresse      → Straße
 //   Beruf | Ausbildungsberuf        → Beruf (mehrere mit | oder , trennen)
+//   Webseite | Website | Link | Homepage | URL  → Link zur Karriere-/Job-Seite
+//
+// Auch für einen einzelnen Betrieb reicht eine Datei mit nur einer Zeile —
+// z. B. wenn ein Betrieb telefonisch oder über die eigene Homepage gefunden
+// wurde und keiner Kammer-Liste entstammt:
+//
+//   Arbeitgeber;Ort;Beruf;Webseite
+//   Schreinerei Vogt;Waiblingen;Schreiner/in;https://schreinerei-vogt.de/jobs
 
 import { readFile, writeFile, mkdir } from 'node:fs/promises';
 import { dirname, resolve } from 'node:path';
@@ -28,6 +36,7 @@ const ALIASSE = {
   strasse: ['strasse', 'straße', 'adresse', 'anschrift'],
   region: ['region', 'bundesland', 'landkreis', 'kreis'],
   beruf: ['beruf', 'ausbildungsberuf', 'berufe', 'ausbildungsberufe'],
+  webseite: ['webseite', 'website', 'homepage', 'link', 'url', 'jobseite'],
 };
 
 function hole(zeile, feld) {
@@ -59,7 +68,7 @@ export function zeilenAlsStellen(zeilen) {
       refnr: '',
       koordinaten: null,
       kundennummerHash: null,
-      externeUrl: null,
+      externeUrl: hole(zeile, 'webseite') || null,
       veroeffentlicht: null,
     };
 

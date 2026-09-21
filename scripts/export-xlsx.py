@@ -54,6 +54,7 @@ def zeile_aus_betrieb(betrieb):
         ),
         "Jahre": " ".join(betrieb.get("jahre", [])),
         "Quellen": " ".join(betrieb.get("quellen", [])),
+        "Webseite": betrieb.get("externeUrl", "") or "",
         "Notiz": betrieb.get("notiz", ""),
     }
 
@@ -84,21 +85,27 @@ def main():
         zelle.alignment = Alignment(vertical="center")
 
     status_index = spalten.index("Status")
+    webseite_index = spalten.index("Webseite")
     for zeile in zeilen:
         ws.append([zeile[s] for s in spalten])
 
+    link_font = Font(name=SCHRIFT, size=10, color="0563C1", underline="single")
     for row in ws.iter_rows(min_row=2, max_row=ws.max_row):
         ruhend = row[status_index].value == "ohne aktuelle Anzeige"
-        for zelle in row:
+        for i, zelle in enumerate(row):
             zelle.font = normal_font
             if ruhend:
                 zelle.fill = ruhend_fill
+        webseite_zelle = row[webseite_index]
+        if webseite_zelle.value:
+            webseite_zelle.hyperlink = webseite_zelle.value
+            webseite_zelle.font = link_font
 
     breiten = {
         "Arbeitgeber": 34, "Ort": 16, "PLZ": 7, "Strasse": 22, "Region": 20,
         "Ausbildungsberufe": 46, "AnzahlBerufe": 12, "AnzahlAnzeigen": 13,
         "ErstmalsGesehen": 14, "ZuletztGesehen": 14, "TageOhneAnzeige": 14,
-        "Status": 20, "Jahre": 12, "Quellen": 14, "Notiz": 28,
+        "Status": 20, "Jahre": 12, "Quellen": 14, "Webseite": 30, "Notiz": 28,
     }
     for i, name in enumerate(spalten, start=1):
         ws.column_dimensions[get_column_letter(i)].width = breiten.get(name, 14)

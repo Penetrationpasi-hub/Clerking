@@ -41,6 +41,34 @@ test('Import erkennt Spaltennamen einer Kammer-Liste', () => {
   assert.deepEqual(stellen.map((stelle) => stelle.beruf), ['Zimmerer', 'Bauzeichner']);
 });
 
+test('Webseite aus dem Import landet im Bestand und in der CSV', () => {
+  // Für Betriebe, die telefonisch oder über die eigene Homepage gefunden
+  // wurden, nicht über eine Kammer-Liste — ein Link statt eines Berufs reicht.
+  const stellen = zeilenAlsStellen(
+    csvLesen('Arbeitgeber;Ort;Beruf;Webseite\nSchreinerei Vogt;Waiblingen;Schreiner/in;https://schreinerei-vogt.de/jobs\n'),
+  );
+  assert.equal(stellen[0].externeUrl, 'https://schreinerei-vogt.de/jobs');
+
+  const { bestand } = fuegeStellenEin(leererBestand(), stellen, { datum: '2026-09-18', quelle: 'eigene-recherche' });
+  assert.equal(bestand.betriebe[0].externeUrl, 'https://schreinerei-vogt.de/jobs');
+  assert.ok(bestandAlsCsv(bestand).includes('https://schreinerei-vogt.de/jobs'));
+});
+
+test('vorhandene Webseite wird durch einen späteren Import ohne Link nicht gelöscht', () => {
+  let bestand = leererBestand();
+  ({ bestand } = fuegeStellenEin(
+    bestand,
+    [{ arbeitgeber: 'Schreinerei Vogt', ort: 'Waiblingen', beruf: 'Schreiner/in', externeUrl: 'https://schreinerei-vogt.de/jobs' }],
+    { datum: '2026-09-18', quelle: 'eigene-recherche' },
+  ));
+  ({ bestand } = fuegeStellenEin(
+    bestand,
+    [{ arbeitgeber: 'Schreinerei Vogt', ort: 'Waiblingen', beruf: 'Schreiner/in', refnr: 'R9' }],
+    { datum: '2026-10-01', quelle: 'ba-jobsuche' },
+  ));
+  assert.equal(bestand.betriebe[0].externeUrl, 'https://schreinerei-vogt.de/jobs');
+});
+
 test('Import erkennt auch komma-getrennte Dateien', () => {
   const zeilen = csvLesen('Arbeitgeber,Ort\nAutohaus Abel,Waiblingen\n');
   assert.equal(zeilen[0].Arbeitgeber, 'Autohaus Abel');

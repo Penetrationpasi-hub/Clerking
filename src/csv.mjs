@@ -18,6 +18,7 @@ export const SPALTEN = [
   'ZuletztGesehen',
   'Jahre',
   'Quellen',
+  'Webseite',
   'Notiz',
 ];
 
@@ -49,6 +50,7 @@ export function bestandAlsCsv(bestand) {
         betrieb.zuletztGesehen,
         (betrieb.jahre ?? []).join(' '),
         (betrieb.quellen ?? []).join(' '),
+        betrieb.externeUrl ?? '',
         betrieb.notiz ?? '',
       ]
         .map(feld)

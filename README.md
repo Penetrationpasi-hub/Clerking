@@ -124,9 +124,30 @@ node src/import-csv.mjs hwk-liste.csv --quelle hwk-stuttgart
 
 Erkannt werden `Arbeitgeber`/`Firma`/`Betrieb`, `Ort`/`Stadt`, `PLZ`,
 `Strasse`, `Beruf`/`Ausbildungsberufe` (mehrere mit `|` oder `,` getrennt),
-Semikolon und Komma als Trennzeichen. Was über Name + Ort auf einen
-vorhandenen Betrieb passt, wird zusammengeführt statt doppelt angelegt; die
-Quelle steht danach am Datensatz.
+`Webseite`/`Website`/`Link`/`Homepage`/`URL`, Semikolon und Komma als
+Trennzeichen. Was über Name + Ort auf einen vorhandenen Betrieb passt, wird
+zusammengeführt statt doppelt angelegt; die Quelle steht danach am
+Datensatz.
+
+## Einen einzelnen Betrieb von Hand eintragen
+
+Genauso läuft es, wenn ein Betrieb nicht aus einer Kammer-Liste kommt,
+sondern z. B. telefonisch gefunden wurde oder über seine eigene
+Karriereseite: eine CSV mit einer einzigen Zeile reicht.
+
+```
+Arbeitgeber;Ort;Beruf;Webseite
+Schreinerei Vogt;Waiblingen;Schreiner/in;https://schreinerei-vogt.de/jobs
+```
+
+```bash
+node src/import-csv.mjs schreinerei-vogt.csv --quelle eigene-recherche
+```
+
+Der Link landet als eigene Spalte `Webseite` in CSV und Excel (dort
+klickbar) und in der Web-Ansicht direkt als Link auf den Firmennamen. Er
+ersetzt nicht Name und Ort — die bleiben der Schlüssel, über den ein Betrieb
+wiedererkannt wird, falls er später auch über die BA-Jobsuche auftaucht.
 
 ## Grenzen — ehrlich
 
