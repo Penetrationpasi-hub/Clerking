@@ -1,7 +1,7 @@
 {
   "version": 1,
   "aktualisiert": "2026-09-23",
-  "anzahlBetriebe": 2782,
+  "anzahlBetriebe": 2790,
   "betriebe": [
     {
       "schluessel": "autohaus eberhard schneider|",
@@ -611,7 +611,7 @@
       "jahre": [
         "2026"
       ],
-      "anzahlAnzeigen": 2,
+      "anzahlAnzeigen": 3,
       "berufe": [
         {
           "beruf": "Klempner/in",
@@ -628,9 +628,10 @@
           "normalisiert": "zimmerer zimmerin",
           "erstmalsGesehen": "2026-09-20",
           "zuletztGesehen": "2026-09-23",
-          "anzahlAnzeigen": 1,
+          "anzahlAnzeigen": 2,
           "referenznummern": [
-            "10000-1201515619-S"
+            "10000-1201515619-S",
+            "10000-1208007666-S"
           ]
         }
       ],
@@ -5954,7 +5955,7 @@
       "jahre": [
         "2026"
       ],
-      "anzahlAnzeigen": 4,
+      "anzahlAnzeigen": 6,
       "berufe": [
         {
           "beruf": "Betriebswirt/in (doppelt qualifizierende Ausbildung) - allgemeine Betriebswirtschaft",
@@ -5987,13 +5988,24 @@
           ]
         },
         {
+          "beruf": "Pharmakant/in",
+          "normalisiert": "pharmakant",
+          "erstmalsGesehen": "2026-09-23",
+          "zuletztGesehen": "2026-09-23",
+          "anzahlAnzeigen": 1,
+          "referenznummern": [
+            "10001-1003751552-S"
+          ]
+        },
+        {
           "beruf": "Produktionsfachkraft Chemie",
           "normalisiert": "produktionsfachkraft chemie",
           "erstmalsGesehen": "2026-09-20",
-          "zuletztGesehen": "2026-09-21",
-          "anzahlAnzeigen": 1,
+          "zuletztGesehen": "2026-09-23",
+          "anzahlAnzeigen": 2,
           "referenznummern": [
-            "10001-1002998278-S"
+            "10001-1002998278-S",
+            "10001-1003751572-S"
           ]
         }
       ],
@@ -7270,6 +7282,41 @@
           "anzahlAnzeigen": 1,
           "referenznummern": [
             "10000-1204159072-S"
+          ]
+        }
+      ],
+      "kundennummerHash": null,
+      "externeUrl": null
+    },
+    {
+      "schluessel": "treiler gtt|besigheim",
+      "arbeitgeber": "Treiler GTT GmbH",
+      "schreibweisen": [
+        "Treiler GTT GmbH"
+      ],
+      "ort": "Besigheim",
+      "plz": "74354",
+      "region": "BADEN_WUERTTEMBERG",
+      "strasse": "Max-Eyth-Str.",
+      "koordinaten": null,
+      "quellen": [
+        "ba-jobsuche"
+      ],
+      "erstmalsGesehen": "2026-09-23",
+      "zuletztGesehen": "2026-09-23",
+      "jahre": [
+        "2026"
+      ],
+      "anzahlAnzeigen": 1,
+      "berufe": [
+        {
+          "beruf": "Industriekaufmann/-frau",
+          "normalisiert": "industriekaufmann",
+          "erstmalsGesehen": "2026-09-23",
+          "zuletztGesehen": "2026-09-23",
+          "anzahlAnzeigen": 1,
+          "referenznummern": [
+            "10000-1208006027-S"
           ]
         }
       ],
@@ -9161,20 +9208,21 @@
         "ba-jobsuche"
       ],
       "erstmalsGesehen": "2026-09-20",
-      "zuletztGesehen": "2026-09-22",
+      "zuletztGesehen": "2026-09-23",
       "jahre": [
         "2026"
       ],
-      "anzahlAnzeigen": 1,
+      "anzahlAnzeigen": 2,
       "berufe": [
         {
           "beruf": "Behälter- und Apparatebauer/in",
           "normalisiert": "behaelter und apparatebauer",
           "erstmalsGesehen": "2026-09-20",
-          "zuletztGesehen": "2026-09-22",
-          "anzahlAnzeigen": 1,
+          "zuletztGesehen": "2026-09-23",
+          "anzahlAnzeigen": 2,
           "referenznummern": [
-            "10000-1204489919-S"
+            "10000-1204489919-S",
+            "10000-1208006385-S"
           ]
         }
       ],
@@ -19380,6 +19428,91 @@
           "anzahlAnzeigen": 1,
           "referenznummern": [
             "10000-1201636040-S"
+          ]
+        }
+      ],
+      "kundennummerHash": null,
+      "externeUrl": null
+    },
+    {
+      "schluessel": "zeller gmelin|eislingen fils",
+      "arbeitgeber": "Zeller+Gmelin GmbH & Co. KG",
+      "schreibweisen": [
+        "Zeller+Gmelin GmbH & Co. KG"
+      ],
+      "ort": "Eislingen/Fils",
+      "plz": "73054",
+      "region": "BADEN_WUERTTEMBERG",
+      "strasse": "",
+      "koordinaten": null,
+      "quellen": [
+        "ba-jobsuche"
+      ],
+      "erstmalsGesehen": "2026-09-23",
+      "zuletztGesehen": "2026-09-23",
+      "jahre": [
+        "2026"
+      ],
+      "anzahlAnzeigen": 6,
+      "berufe": [
+        {
+          "beruf": "Chemielaborant/in",
+          "normalisiert": "chemielaborant",
+          "erstmalsGesehen": "2026-09-23",
+          "zuletztGesehen": "2026-09-23",
+          "anzahlAnzeigen": 1,
+          "referenznummern": [
+            "12514-202609z014acs01-S"
+          ]
+        },
+        {
+          "beruf": "Chemikant/in",
+          "normalisiert": "chemikant",
+          "erstmalsGesehen": "2026-09-23",
+          "zuletztGesehen": "2026-09-23",
+          "anzahlAnzeigen": 1,
+          "referenznummern": [
+            "12514-202609z014acs02-S"
+          ]
+        },
+        {
+          "beruf": "Fachkraft - Lagerlogistik",
+          "normalisiert": "fachkraft lagerlogistik",
+          "erstmalsGesehen": "2026-09-23",
+          "zuletztGesehen": "2026-09-23",
+          "anzahlAnzeigen": 1,
+          "referenznummern": [
+            "12514-202609z014afs02-S"
+          ]
+        },
+        {
+          "beruf": "Fachlagerist/in",
+          "normalisiert": "fachlagerist",
+          "erstmalsGesehen": "2026-09-23",
+          "zuletztGesehen": "2026-09-23",
+          "anzahlAnzeigen": 1,
+          "referenznummern": [
+            "12514-202609z014afs01-S"
+          ]
+        },
+        {
+          "beruf": "Industriekaufmann/-frau",
+          "normalisiert": "industriekaufmann",
+          "erstmalsGesehen": "2026-09-23",
+          "zuletztGesehen": "2026-09-23",
+          "anzahlAnzeigen": 1,
+          "referenznummern": [
+            "12514-202609z014ais01-S"
+          ]
+        },
+        {
+          "beruf": "Produktionsfachkraft Chemie",
+          "normalisiert": "produktionsfachkraft chemie",
+          "erstmalsGesehen": "2026-09-23",
+          "zuletztGesehen": "2026-09-23",
+          "anzahlAnzeigen": 1,
+          "referenznummern": [
+            "12514-202609z014aps02-S"
           ]
         }
       ],
@@ -49417,16 +49550,17 @@
       "jahre": [
         "2026"
       ],
-      "anzahlAnzeigen": 1,
+      "anzahlAnzeigen": 2,
       "berufe": [
         {
           "beruf": "Kaufmann/-frau - Groß- und Außenhandelsmanagement (Großhandel)",
           "normalisiert": "kaufmann gross und aussenhandelsmanagement grosshandel",
           "erstmalsGesehen": "2026-09-20",
           "zuletztGesehen": "2026-09-23",
-          "anzahlAnzeigen": 1,
+          "anzahlAnzeigen": 2,
           "referenznummern": [
-            "10000-1204152358-S"
+            "10000-1204152358-S",
+            "10000-1208007370-S"
           ]
         }
       ],
@@ -59786,6 +59920,41 @@
       "externeUrl": null
     },
     {
+      "schluessel": "aida ausweis informations datensysteme|magstadt",
+      "arbeitgeber": "AIDA Ausweis-Informations- Datensysteme GmbH",
+      "schreibweisen": [
+        "AIDA Ausweis-Informations- Datensysteme GmbH"
+      ],
+      "ort": "Magstadt",
+      "plz": "71106",
+      "region": "BADEN_WUERTTEMBERG",
+      "strasse": "Ringstr.",
+      "koordinaten": null,
+      "quellen": [
+        "ba-jobsuche"
+      ],
+      "erstmalsGesehen": "2026-09-23",
+      "zuletztGesehen": "2026-09-23",
+      "jahre": [
+        "2026"
+      ],
+      "anzahlAnzeigen": 1,
+      "berufe": [
+        {
+          "beruf": "Fachinformatiker/in - Systemintegration",
+          "normalisiert": "fachinformatiker systemintegration",
+          "erstmalsGesehen": "2026-09-23",
+          "zuletztGesehen": "2026-09-23",
+          "anzahlAnzeigen": 1,
+          "referenznummern": [
+            "10000-1208002130-S"
+          ]
+        }
+      ],
+      "kundennummerHash": null,
+      "externeUrl": null
+    },
+    {
       "schluessel": "drk altenpflegeheim|magstadt",
       "arbeitgeber": "DRK Altenpflegeheim gGmbH",
       "schreibweisen": [
@@ -65033,6 +65202,71 @@
       "externeUrl": null
     },
     {
+      "schluessel": "artfliesen gmbh u co|nuertingen",
+      "arbeitgeber": "Artfliesen GmbH u. Co. KG",
+      "schreibweisen": [
+        "Artfliesen GmbH u. Co. KG"
+      ],
+      "ort": "Nürtingen",
+      "plz": "72622",
+      "region": "BADEN_WUERTTEMBERG",
+      "strasse": "Metzinger Str.",
+      "koordinaten": null,
+      "quellen": [
+        "ba-jobsuche"
+      ],
+      "erstmalsGesehen": "2026-09-23",
+      "zuletztGesehen": "2026-09-23",
+      "jahre": [
+        "2026"
+      ],
+      "anzahlAnzeigen": 4,
+      "berufe": [
+        {
+          "beruf": "Fachlagerist/in",
+          "normalisiert": "fachlagerist",
+          "erstmalsGesehen": "2026-09-23",
+          "zuletztGesehen": "2026-09-23",
+          "anzahlAnzeigen": 1,
+          "referenznummern": [
+            "10000-1208004773-S"
+          ]
+        },
+        {
+          "beruf": "Fliesen-, Platten- und Mosaikleger/in",
+          "normalisiert": "fliesen platten und mosaikleger",
+          "erstmalsGesehen": "2026-09-23",
+          "zuletztGesehen": "2026-09-23",
+          "anzahlAnzeigen": 1,
+          "referenznummern": [
+            "10000-1208004845-S"
+          ]
+        },
+        {
+          "beruf": "Kaufmann/-frau - Büromanagement",
+          "normalisiert": "kaufmann bueromanagement",
+          "erstmalsGesehen": "2026-09-23",
+          "zuletztGesehen": "2026-09-23",
+          "anzahlAnzeigen": 1,
+          "referenznummern": [
+            "10000-1208004161-S"
+          ]
+        },
+        {
+          "beruf": "Kaufmann/-frau - Groß- und Außenhandelsmanagement (Großhandel)",
+          "normalisiert": "kaufmann gross und aussenhandelsmanagement grosshandel",
+          "erstmalsGesehen": "2026-09-23",
+          "zuletztGesehen": "2026-09-23",
+          "anzahlAnzeigen": 1,
+          "referenznummern": [
+            "10000-1208004278-S"
+          ]
+        }
+      ],
+      "kundennummerHash": null,
+      "externeUrl": null
+    },
+    {
       "schluessel": "b&w personal|nuertingen",
       "arbeitgeber": "B&W Personal GmbH",
       "schreibweisen": [
@@ -66147,6 +66381,51 @@
           "referenznummern": [
             "10000-1207277717-S",
             "10000-1203715011-S"
+          ]
+        }
+      ],
+      "kundennummerHash": null,
+      "externeUrl": null
+    },
+    {
+      "schluessel": "kursana care gmbh kursana domizil nuertingen|nuertingen",
+      "arbeitgeber": "Kursana Care GmbH Kursana Domizil Nürtingen",
+      "schreibweisen": [
+        "Kursana Care GmbH Kursana Domizil Nürtingen"
+      ],
+      "ort": "Nürtingen",
+      "plz": "72622",
+      "region": "BADEN_WUERTTEMBERG",
+      "strasse": "Europastr.",
+      "koordinaten": null,
+      "quellen": [
+        "ba-jobsuche"
+      ],
+      "erstmalsGesehen": "2026-09-23",
+      "zuletztGesehen": "2026-09-23",
+      "jahre": [
+        "2026"
+      ],
+      "anzahlAnzeigen": 2,
+      "berufe": [
+        {
+          "beruf": "Pflegeassistent/in",
+          "normalisiert": "pflegeassistent",
+          "erstmalsGesehen": "2026-09-23",
+          "zuletztGesehen": "2026-09-23",
+          "anzahlAnzeigen": 1,
+          "referenznummern": [
+            "10000-1208005747-S"
+          ]
+        },
+        {
+          "beruf": "Pflegefachmann/-frau (Ausbildung)",
+          "normalisiert": "pflegefachmann ausbildung",
+          "erstmalsGesehen": "2026-09-23",
+          "zuletztGesehen": "2026-09-23",
+          "anzahlAnzeigen": 1,
+          "referenznummern": [
+            "10000-1208005749-S"
           ]
         }
       ],
@@ -70106,16 +70385,17 @@
       "jahre": [
         "2026"
       ],
-      "anzahlAnzeigen": 1,
+      "anzahlAnzeigen": 2,
       "berufe": [
         {
           "beruf": "Elektroniker/in - Betriebstechnik",
           "normalisiert": "elektroniker betriebstechnik",
           "erstmalsGesehen": "2026-09-20",
           "zuletztGesehen": "2026-09-23",
-          "anzahlAnzeigen": 1,
+          "anzahlAnzeigen": 2,
           "referenznummern": [
-            "10000-1202437262-S"
+            "10000-1202437262-S",
+            "10000-1208002333-S"
           ]
         }
       ],
@@ -85847,8 +86127,18 @@
       "jahre": [
         "2026"
       ],
-      "anzahlAnzeigen": 3,
+      "anzahlAnzeigen": 4,
       "berufe": [
+        {
+          "beruf": "Fachkraft - Lagerlogistik",
+          "normalisiert": "fachkraft lagerlogistik",
+          "erstmalsGesehen": "2026-09-23",
+          "zuletztGesehen": "2026-09-23",
+          "anzahlAnzeigen": 1,
+          "referenznummern": [
+            "10000-1208007534-S"
+          ]
+        },
         {
           "beruf": "Kaufmann/-frau - Einzelhandel",
           "normalisiert": "kaufmann einzelhandel",
@@ -86008,12 +86298,22 @@
       "jahre": [
         "2026"
       ],
-      "anzahlAnzeigen": 1,
+      "anzahlAnzeigen": 2,
       "berufe": [
         {
           "beruf": "Fachangestellte/r - Arbeitsmarktdienstleistungen",
           "normalisiert": "fachangestellte arbeitsmarktdienstleistungen",
           "erstmalsGesehen": "2026-09-20",
+          "zuletztGesehen": "2026-09-23",
+          "anzahlAnzeigen": 1,
+          "referenznummern": [
+            "21125-2332006-S"
+          ]
+        },
+        {
+          "beruf": "Sozialassistent/in",
+          "normalisiert": "sozialassistent",
+          "erstmalsGesehen": "2026-09-23",
           "zuletztGesehen": "2026-09-23",
           "anzahlAnzeigen": 1,
           "referenznummern": [
@@ -88559,6 +88859,41 @@
             "17907-44398707-91-S",
             "17907-44395237-91-S",
             "17907-44395225-91-S"
+          ]
+        }
+      ],
+      "kundennummerHash": null,
+      "externeUrl": null
+    },
+    {
+      "schluessel": "alisan elezi kfz mietwerkstatt|stuttgart",
+      "arbeitgeber": "Alisan Elezi Kfz - Mietwerkstatt",
+      "schreibweisen": [
+        "Alisan Elezi Kfz - Mietwerkstatt"
+      ],
+      "ort": "Stuttgart",
+      "plz": "70563",
+      "region": "BADEN_WUERTTEMBERG",
+      "strasse": "Hauptstr.",
+      "koordinaten": null,
+      "quellen": [
+        "ba-jobsuche"
+      ],
+      "erstmalsGesehen": "2026-09-23",
+      "zuletztGesehen": "2026-09-23",
+      "jahre": [
+        "2026"
+      ],
+      "anzahlAnzeigen": 1,
+      "berufe": [
+        {
+          "beruf": "Mechatroniker/in",
+          "normalisiert": "mechatroniker",
+          "erstmalsGesehen": "2026-09-23",
+          "zuletztGesehen": "2026-09-23",
+          "anzahlAnzeigen": 1,
+          "referenznummern": [
+            "10000-1208002215-S"
           ]
         }
       ],
@@ -94328,8 +94663,18 @@
       "jahre": [
         "2026"
       ],
-      "anzahlAnzeigen": 17,
+      "anzahlAnzeigen": 18,
       "berufe": [
+        {
+          "beruf": "Bodenleger/in",
+          "normalisiert": "bodenleger",
+          "erstmalsGesehen": "2026-09-23",
+          "zuletztGesehen": "2026-09-23",
+          "anzahlAnzeigen": 1,
+          "referenznummern": [
+            "14456-k11173.28624-S"
+          ]
+        },
         {
           "beruf": "Duales Studium zum Bachelor of Arts - BWL Handwerk für 2026 (m/w/d)",
           "normalisiert": "duales studium zum bachelor of arts bwl handwerk fuer 2026",
@@ -107366,6 +107711,41 @@
       "externeUrl": null
     },
     {
+      "schluessel": "dr ing heinrich gesellschaft m b h|waiblingen rems",
+      "arbeitgeber": "Dr.-Ing. Heinrich Gesellschaft m.b.H",
+      "schreibweisen": [
+        "Dr.-Ing. Heinrich Gesellschaft m.b.H"
+      ],
+      "ort": "Waiblingen, Rems",
+      "plz": "71332",
+      "region": "BADEN_WUERTTEMBERG",
+      "strasse": "Heerstr.",
+      "koordinaten": null,
+      "quellen": [
+        "ba-jobsuche"
+      ],
+      "erstmalsGesehen": "2026-09-23",
+      "zuletztGesehen": "2026-09-23",
+      "jahre": [
+        "2026"
+      ],
+      "anzahlAnzeigen": 1,
+      "berufe": [
+        {
+          "beruf": "Vermessungstechniker/in - Vermessung",
+          "normalisiert": "vermessungstechniker vermessung",
+          "erstmalsGesehen": "2026-09-23",
+          "zuletztGesehen": "2026-09-23",
+          "anzahlAnzeigen": 1,
+          "referenznummern": [
+            "10000-1208004798-S"
+          ]
+        }
+      ],
+      "kundennummerHash": null,
+      "externeUrl": null
+    },
+    {
       "schluessel": "elefant chemische produkte|waiblingen rems",
       "arbeitgeber": "Elefant chemische Produkte GmbH",
       "schreibweisen": [
@@ -107474,6 +107854,61 @@
           "anzahlAnzeigen": 1,
           "referenznummern": [
             "10000-1206978701-S"
+          ]
+        }
+      ],
+      "kundennummerHash": null,
+      "externeUrl": null
+    },
+    {
+      "schluessel": "genotec elektronik|waiblingen rems",
+      "arbeitgeber": "GENOTEC Elektronik GmbH",
+      "schreibweisen": [
+        "GENOTEC Elektronik GmbH"
+      ],
+      "ort": "Waiblingen, Rems",
+      "plz": "71334",
+      "region": "BADEN_WUERTTEMBERG",
+      "strasse": "Ackerwiesenstr.",
+      "koordinaten": null,
+      "quellen": [
+        "ba-jobsuche"
+      ],
+      "erstmalsGesehen": "2026-09-23",
+      "zuletztGesehen": "2026-09-23",
+      "jahre": [
+        "2026"
+      ],
+      "anzahlAnzeigen": 3,
+      "berufe": [
+        {
+          "beruf": "Elektroniker/in - Betriebstechnik",
+          "normalisiert": "elektroniker betriebstechnik",
+          "erstmalsGesehen": "2026-09-23",
+          "zuletztGesehen": "2026-09-23",
+          "anzahlAnzeigen": 1,
+          "referenznummern": [
+            "10001-1003750471-S"
+          ]
+        },
+        {
+          "beruf": "Elektroniker/in - Geräte und Systeme",
+          "normalisiert": "elektroniker geraete und systeme",
+          "erstmalsGesehen": "2026-09-23",
+          "zuletztGesehen": "2026-09-23",
+          "anzahlAnzeigen": 1,
+          "referenznummern": [
+            "10001-1003750556-S"
+          ]
+        },
+        {
+          "beruf": "Mechatroniker/in",
+          "normalisiert": "mechatroniker",
+          "erstmalsGesehen": "2026-09-23",
+          "zuletztGesehen": "2026-09-23",
+          "anzahlAnzeigen": 1,
+          "referenznummern": [
+            "10001-1003750625-S"
           ]
         }
       ],
@@ -114591,30 +115026,32 @@
         "ba-jobsuche"
       ],
       "erstmalsGesehen": "2026-09-20",
-      "zuletztGesehen": "2026-09-21",
+      "zuletztGesehen": "2026-09-23",
       "jahre": [
         "2026"
       ],
-      "anzahlAnzeigen": 2,
+      "anzahlAnzeigen": 4,
       "berufe": [
         {
           "beruf": "Altenpflegehelfer/in",
           "normalisiert": "altenpflegehelfer",
           "erstmalsGesehen": "2026-09-20",
-          "zuletztGesehen": "2026-09-21",
-          "anzahlAnzeigen": 1,
+          "zuletztGesehen": "2026-09-23",
+          "anzahlAnzeigen": 2,
           "referenznummern": [
-            "10000-1204526988-S"
+            "10000-1204526988-S",
+            "10000-1207978130-S"
           ]
         },
         {
           "beruf": "Pflegefachmann/-frau (Ausbildung)",
           "normalisiert": "pflegefachmann ausbildung",
           "erstmalsGesehen": "2026-09-20",
-          "zuletztGesehen": "2026-09-21",
-          "anzahlAnzeigen": 1,
+          "zuletztGesehen": "2026-09-23",
+          "anzahlAnzeigen": 2,
           "referenznummern": [
-            "10000-1204527077-S"
+            "10000-1204527077-S",
+            "10000-1207978151-S"
           ]
         }
       ],
