@@ -1,7 +1,8 @@
 # Ausbildungsbetriebe
 
-Sammelt ausbildende Betriebe der Region Stuttgart / Rems-Murr und baut daraus
-einen Bestand, der über die Saison wächst.
+Sammelt ausbildende Betriebe der Region Stuttgart (alle 6 Landkreise: Stadt
+Stuttgart, Böblingen, Esslingen, Göppingen, Ludwigsburg, Rems-Murr-Kreis) und
+baut daraus einen Bestand, der über die Saison wächst.
 
 **Der Kern in einem Satz:** Die BA-Jobsuche zeigt immer nur den aktuellen
 Stand — wer sie täglich abfragt und jeden Arbeitgeber mit Beruf und Ort

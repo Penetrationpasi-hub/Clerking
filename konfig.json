@@ -4,7 +4,10 @@
     { "wo": "Stuttgart", "umkreis": 25 },
     { "wo": "Schorndorf", "umkreis": 20 },
     { "wo": "Backnang", "umkreis": 20 },
-    { "wo": "Ludwigsburg", "umkreis": 20 }
+    { "wo": "Ludwigsburg", "umkreis": 20 },
+    { "wo": "Boeblingen", "umkreis": 20 },
+    { "wo": "Esslingen", "umkreis": 20 },
+    { "wo": "Goeppingen", "umkreis": 20 }
   ],
   "standardUmkreis": 25,
   "angebotsart": 4,
