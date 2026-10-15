@@ -22216,16 +22216,17 @@
       "jahre": [
         "2026"
       ],
-      "anzahlAnzeigen": 1,
+      "anzahlAnzeigen": 2,
       "berufe": [
         {
           "beruf": "Maler/in und Lackierer/in - Gestaltung und Instandhaltung",
           "normalisiert": "maler und lackierer gestaltung und instandhaltung",
           "erstmalsGesehen": "2026-09-20",
           "zuletztGesehen": "2026-10-15",
-          "anzahlAnzeigen": 1,
+          "anzahlAnzeigen": 2,
           "referenznummern": [
-            "10000-1204584191-S"
+            "10000-1204584191-S",
+            "10000-1208303835-S"
           ]
         }
       ],
@@ -52727,20 +52728,21 @@
         "ba-jobsuche"
       ],
       "erstmalsGesehen": "2026-09-20",
-      "zuletztGesehen": "2026-10-01",
+      "zuletztGesehen": "2026-10-15",
       "jahre": [
         "2026"
       ],
-      "anzahlAnzeigen": 1,
+      "anzahlAnzeigen": 2,
       "berufe": [
         {
           "beruf": "Kraftfahrzeugmechatroniker/in - Nutzfahrzeugtechnik",
           "normalisiert": "kraftfahrzeugmechatroniker nutzfahrzeugtechnik",
           "erstmalsGesehen": "2026-09-20",
-          "zuletztGesehen": "2026-10-01",
-          "anzahlAnzeigen": 1,
+          "zuletztGesehen": "2026-10-15",
+          "anzahlAnzeigen": 2,
           "referenznummern": [
-            "10000-1202211156-S"
+            "10000-1202211156-S",
+            "10000-1208304002-S"
           ]
         }
       ],
@@ -69573,7 +69575,7 @@
       "jahre": [
         "2026"
       ],
-      "anzahlAnzeigen": 3,
+      "anzahlAnzeigen": 4,
       "berufe": [
         {
           "beruf": "Anästhesietechnische/r Assistent/in",
@@ -69599,10 +69601,11 @@
           "beruf": "Pflegefachmann/-frau (Ausbildung)",
           "normalisiert": "pflegefachmann ausbildung",
           "erstmalsGesehen": "2026-09-20",
-          "zuletztGesehen": "2026-10-02",
-          "anzahlAnzeigen": 1,
+          "zuletztGesehen": "2026-10-15",
+          "anzahlAnzeigen": 2,
           "referenznummern": [
-            "14537-00066604f91001-S"
+            "14537-00066604f91001-S",
+            "14537-00066605aa7001-S"
           ]
         }
       ],
@@ -87931,20 +87934,21 @@
         "ba-jobsuche"
       ],
       "erstmalsGesehen": "2026-09-20",
-      "zuletztGesehen": "2026-09-30",
+      "zuletztGesehen": "2026-10-15",
       "jahre": [
         "2026"
       ],
-      "anzahlAnzeigen": 1,
+      "anzahlAnzeigen": 2,
       "berufe": [
         {
           "beruf": "Tiermedizinische/r Fachangestellte/r",
           "normalisiert": "tiermedizinische fachangestellte",
           "erstmalsGesehen": "2026-09-20",
-          "zuletztGesehen": "2026-09-30",
-          "anzahlAnzeigen": 1,
+          "zuletztGesehen": "2026-10-15",
+          "anzahlAnzeigen": 2,
           "referenznummern": [
-            "10001-1002554975-S"
+            "10001-1002554975-S",
+            "10000-1208303236-S"
           ]
         }
       ],
@@ -121885,16 +121889,17 @@
       "jahre": [
         "2026"
       ],
-      "anzahlAnzeigen": 1,
+      "anzahlAnzeigen": 2,
       "berufe": [
         {
           "beruf": "Fachinformatiker/in - Anwendungsentwicklung",
           "normalisiert": "fachinformatiker anwendungsentwicklung",
           "erstmalsGesehen": "2026-09-20",
           "zuletztGesehen": "2026-10-15",
-          "anzahlAnzeigen": 1,
+          "anzahlAnzeigen": 2,
           "referenznummern": [
-            "10000-1203175431-S"
+            "10000-1203175431-S",
+            "10000-1208304342-S"
           ]
         }
       ],
