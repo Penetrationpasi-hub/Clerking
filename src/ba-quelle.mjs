@@ -60,7 +60,7 @@ export function stelleAusRohdaten(roh) {
         roh?.veroeffentlichungszeitraum?.von,
         roh?.modifikationsTimestamp,
       ) || null,
-    eintritt: ersterWert(roh?.eintrittsdatum) || null,
+    eintritt: eintrittAusRohdaten(roh),
     koordinaten:
       koordinaten && Number.isFinite(Number(koordinaten.lat)) && Number.isFinite(Number(koordinaten.lon))
         ? { lat: Number(koordinaten.lat), lon: Number(koordinaten.lon) }
@@ -68,6 +68,43 @@ export function stelleAusRohdaten(roh) {
     kundennummerHash: ersterWert(roh?.kundennummerHash) || null,
     externeUrl: ersterWert(roh?.externeUrl) || null,
   };
+}
+
+/**
+ * Sucht den Ausbildungsbeginn in einem BA-Datensatz (Liste oder Detail).
+ *
+ * Die v6-Trefferliste liefert das Feld nicht mehr mit, die Detailseite schon
+ * — aber unter wechselnden Namen (`eintrittsdatum`, `eintrittszeitraum.von`,
+ * …). Deshalb: jedes Feld, dessen Name „eintritt" enthält, rekursiv
+ * abklopfen und das erste `JJJJ-MM-TT` nehmen.
+ *
+ * @returns {string|null}
+ */
+export function eintrittAusRohdaten(roh, tiefe = 0) {
+  if (!roh || typeof roh !== 'object' || tiefe > 4) return null;
+  for (const [schluessel, wert] of Object.entries(roh)) {
+    if (!/eintritt/i.test(schluessel)) continue;
+    const datum = datumIn(wert);
+    if (datum) return datum;
+  }
+  for (const wert of Object.values(roh)) {
+    if (wert && typeof wert === 'object' && !Array.isArray(wert)) {
+      const datum = eintrittAusRohdaten(wert, tiefe + 1);
+      if (datum) return datum;
+    }
+  }
+  return null;
+}
+
+function datumIn(wert) {
+  if (typeof wert === 'string') return /^\d{4}-\d{2}-\d{2}/.exec(wert)?.[0] ?? null;
+  if (wert && typeof wert === 'object') {
+    for (const kandidat of [wert.von, wert.ab, wert.datum, ...Object.values(wert)]) {
+      const datum = typeof kandidat === 'string' ? /^\d{4}-\d{2}-\d{2}/.exec(kandidat)?.[0] : null;
+      if (datum) return datum;
+    }
+  }
+  return null;
 }
 
 /**
@@ -171,4 +208,27 @@ export async function holeAlleSeiten(optionen) {
   }
 
   return { stellen: alle, gesamt };
+}
+
+/**
+ * Holt die Detailseite einer Anzeige (dort steht der Ausbildungsbeginn).
+ * Liefert die Rohdaten oder `null`, wenn die Anzeige nicht (mehr) existiert.
+ */
+export async function holeDetail(refnr, { fetchImpl = fetch, versuche = 3 } = {}) {
+  const kodiert = Buffer.from(refnr, 'utf-8').toString('base64');
+  const url = `${BASIS}/pc/v4/jobdetails/${encodeURIComponent(kodiert)}`;
+  let letzterFehler;
+  for (let versuch = 1; versuch <= versuche; versuch += 1) {
+    try {
+      const antwort = await fetchImpl(url, { headers: { 'X-API-Key': API_KEY, Accept: 'application/json' } });
+      if (antwort.status === 404) return null;
+      if (antwort.status === 429 || antwort.status >= 500) throw new Error(`BA HTTP ${antwort.status}`);
+      if (!antwort.ok) return null;
+      return await antwort.json();
+    } catch (fehler) {
+      letzterFehler = fehler;
+      if (versuch < versuche) await warte(2 ** versuch * 500);
+    }
+  }
+  throw letzterFehler;
 }

@@ -9,7 +9,7 @@
 import { readFile, writeFile, mkdir } from 'node:fs/promises';
 import { dirname, join, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
-import { ANGEBOTSART, holeAlleSeiten, ergebnisseAusAntwort } from './ba-quelle.mjs';
+import { ANGEBOTSART, holeAlleSeiten, ergebnisseAusAntwort, holeDetail, eintrittAusRohdaten } from './ba-quelle.mjs';
 import { ladeBestand, fuegeStellenEin, speichereBestand, schreibeHistorie } from './speicher.mjs';
 import { bestandAlsCsv } from './csv.mjs';
 
@@ -20,6 +20,7 @@ export const PFADE = {
   csv: join(PROJEKT, 'daten', 'betriebe.csv'),
   historie: join(PROJEKT, 'daten', 'historie.jsonl'),
   laufLog: join(PROJEKT, 'daten', 'letzter-lauf.json'),
+  eintritte: join(PROJEKT, 'daten', 'eintritte.json'),
 };
 
 function argumenteLesen(argv) {
@@ -43,6 +44,50 @@ function heute() {
 
 async function ladeKonfig(pfad) {
   return JSON.parse(await readFile(pfad, 'utf8'));
+}
+
+/**
+ * Ergänzt den Ausbildungsbeginn aus den Detailseiten. Jede Referenznummer
+ * wird nur einmal abgefragt; das Ergebnis (auch „kein Datum") landet in
+ * daten/eintritte.json. Pro Lauf höchstens `maxAbrufe` Abfragen — der
+ * Altbestand wird so über ein paar Tage nachgeholt, statt die BA an einem
+ * Tag mit Tausenden Anfragen zu belasten.
+ */
+async function ergaenzeEintritte(stellen, { maxAbrufe, pauseMs, trocken, protokoll }) {
+  let cache = {};
+  try {
+    cache = JSON.parse(await readFile(PFADE.eintritte, 'utf8'));
+  } catch (fehler) {
+    if (fehler.code !== 'ENOENT') throw fehler;
+  }
+
+  const offen = [...new Set(stellen.filter((s) => !s.eintritt && s.refnr && !(s.refnr in cache)).map((s) => s.refnr))];
+  let abgerufen = 0;
+  let gefunden = 0;
+  for (const refnr of offen.slice(0, maxAbrufe)) {
+    try {
+      const detail = await holeDetail(refnr);
+      const datum = eintrittAusRohdaten(detail);
+      if (abgerufen === 0 && detail) {
+        // Einmal pro Lauf zeigen, welche Felder die BA liefert — falls sich
+        // der Feldname ändert, sieht man es hier im Actions-Log.
+        const felder = Object.keys(detail).filter((k) => /eintritt|beginn/i.test(k));
+        protokoll(`  Detail-Felder mit Eintritt/Beginn: ${felder.join(', ') || '(keine)'}`);
+      }
+      cache[refnr] = datum;
+      abgerufen += 1;
+      if (datum) gefunden += 1;
+    } catch (fehler) {
+      protokoll(`    ! Detail ${refnr}: ${fehler.message}`);
+    }
+    await new Promise((r) => setTimeout(r, pauseMs));
+  }
+  protokoll(`Ausbildungsbeginn : ${abgerufen} Details abgefragt, ${gefunden} mit Datum, ${Math.max(0, offen.length - maxAbrufe)} noch offen`);
+
+  for (const stelle of stellen) {
+    if (!stelle.eintritt && cache[stelle.refnr]) stelle.eintritt = cache[stelle.refnr];
+  }
+  if (!trocken) await writeFile(PFADE.eintritte, `${JSON.stringify(cache)}\n`, 'utf8');
 }
 
 export async function sammle({ argv = [], protokoll = console.log } = {}) {
@@ -91,6 +136,15 @@ export async function sammle({ argv = [], protokoll = console.log } = {}) {
         }
       }
     }
+  }
+
+  if (!argumente['aus-datei'] && !argumente['ohne-details']) {
+    await ergaenzeEintritte(stellen, {
+      maxAbrufe: Number(argumente['max-details'] ?? konfig.maxDetailabrufe ?? 2500),
+      pauseMs: konfig.detailPauseMs ?? 150,
+      trocken,
+      protokoll,
+    });
   }
 
   const bestandVorher = await ladeBestand(PFADE.bestand);

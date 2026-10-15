@@ -114,3 +114,12 @@ test('blättert, bis die letzte Seite unvollständig ist', async () => {
 
   assert.equal(stellen.length, 3);
 });
+
+test('eintrittAusRohdaten findet den Beginn unter verschiedenen Feldnamen', async () => {
+  const { eintrittAusRohdaten } = await import('../src/ba-quelle.mjs');
+  assert.equal(eintrittAusRohdaten({ eintrittsdatum: '2027-09-01' }), '2027-09-01');
+  assert.equal(eintrittAusRohdaten({ eintrittszeitraum: { von: '2027-08-01T00:00:00' } }), '2027-08-01');
+  assert.equal(eintrittAusRohdaten({ stellenangebot: { eintrittsdatum: '2026-09-01' } }), '2026-09-01');
+  assert.equal(eintrittAusRohdaten({ titel: 'x', aktuelleVeroeffentlichungsdatum: '2026-10-01' }), null);
+  assert.equal(eintrittAusRohdaten(null), null);
+});
