@@ -174,6 +174,13 @@ export function trageStelleEin(index, stelle, { datum, quelle }) {
     beruf.anzahlAnzeigen = 1;
   }
 
+  // Ausbildungsbeginn laut Anzeige (BA-Feld `eintrittsdatum`). Als Liste,
+  // weil viele Betriebe parallel für dieses und nächstes Jahr ausschreiben.
+  const beginn = /^\d{4}-\d{2}-\d{2}/.exec(String(stelle.eintritt ?? ''))?.[0];
+  if (beginn) {
+    beruf.ausbildungsbeginne = eindeutig([...(beruf.ausbildungsbeginne ?? []), beginn]).sort();
+  }
+
   betrieb.anzahlAnzeigen = betrieb.berufe.reduce(
     (summe, eintrag) => summe + (eintrag.anzahlAnzeigen ?? 0),
     0,

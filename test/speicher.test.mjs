@@ -163,3 +163,16 @@ test('Betriebe sind nach Ort und Name sortiert', () => {
     ['Backnang/Bäcker Bopp', 'Waiblingen/Autohaus Abel', 'Waiblingen/Zimmerei Zoll'],
   );
 });
+
+test('Ausbildungsbeginn wird pro Beruf gesammelt, ohne Dubletten', () => {
+  let bestand = leererBestand();
+  ({ bestand } = fuegeStellenEin(bestand, [stelle({ eintritt: '2026-09-01' })], { datum: '2026-09-18', quelle: 'ba-jobsuche' }));
+  ({ bestand } = fuegeStellenEin(bestand, [stelle({ refnr: 'REF-2', eintritt: '2027-09-01T00:00:00' })], { datum: '2026-09-19', quelle: 'ba-jobsuche' }));
+  ({ bestand } = fuegeStellenEin(bestand, [stelle({ eintritt: '2026-09-01' })], { datum: '2026-09-20', quelle: 'ba-jobsuche' }));
+  assert.deepEqual(bestand.betriebe[0].berufe[0].ausbildungsbeginne, ['2026-09-01', '2027-09-01']);
+});
+
+test('ohne Eintrittsdatum entsteht kein leeres Feld', () => {
+  const { bestand } = fuegeStellenEin(leererBestand(), [stelle()], { datum: '2026-09-18', quelle: 'ba-jobsuche' });
+  assert.equal(bestand.betriebe[0].berufe[0].ausbildungsbeginne, undefined);
+});
