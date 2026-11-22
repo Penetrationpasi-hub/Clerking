@@ -77,11 +77,12 @@ Treffer ein. **Gelöscht wird nie.** Verschwindet eine Anzeige, bleibt der
 Betrieb mit `zuletztGesehen` stehen — und wird damit erst richtig wertvoll.
 
 `angebotsart=4` liefert Ausbildungsplätze und duale Studien zusammen. Der
-Sammellauf setzt deshalb `ausbildungsart=0` und sortiert duale Studien
-zusätzlich anhand von Feld und Titel aus (`src/ausbildungsarten.mjs`). Was
-schon im Bestand steht, holt `node src/bereinigen.mjs` nach — zuerst mit
-`--trocken` nur anzeigen. Betriebe aus Kammer-Import oder Handeingabe bleiben
-dabei erhalten.
+Sammellauf setzt deshalb `ausbildungsart=0` und kennzeichnet duale Studien
+zusätzlich anhand von Feld und Titel (`art: "duales_studium"` in
+`src/ausbildungsarten.mjs`). Gelöscht wird nichts: der Kontakt bleibt für
+Initiativbewerbungen im Bestand, CSV und Excel blenden die Studien aus. Was
+schon im Bestand steht, markiert `node src/bereinigen.mjs` nach — zuerst mit
+`--trocken` nur anzeigen.
 
 Zwei Dinge, an denen so eine Sammlung sonst scheitert, sind hier gelöst:
 

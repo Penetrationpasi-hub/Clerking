@@ -1,31 +1,27 @@
 #!/usr/bin/env node
-// Bereinigt den Bestand von dualen Studien.
+// Markiert duale Studien im Bestand, statt sie zu löschen.
 //
 //   node src/bereinigen.mjs --trocken   (nur zeigen, nichts schreiben)
 //   node src/bereinigen.mjs             (Bestand und CSV neu schreiben)
 //
 // Der Filter im Sammellauf (src/ausbildungsarten.mjs) gilt erst für
 // künftige Läufe — der Bestand enthält bereits duale Studien. Dieses Skript
-// holt sie nach: es entfernt die Berufe, die nach einem dualen Studium
-// aussehen, und die Betriebe, die danach nichts mehr zu bieten haben.
-//
-// Bewusst wird NICHHT der ganze Betrieb gelöscht, wenn er auch aus einer
-// anderen Quelle stammt (Kammer-Import, Handeingabe): das sind Einträge, die
-// jemand mit Absicht gepflegt hat.
+// holt sie nach: es setzt an den betroffenen Berufen `art: "duales_studium"`.
+// CSV und Excel blenden diese Berufe aus. Betriebe, die danach keine
+// Ausbildung mehr haben, bleiben trotzdem im JSON — der Kontakt ist für
+// Initiativbewerbungen wertvoll, und eine falsche Markierung lässt sich
+// zurücknehmen.
 //
 // Nach dem Lauf muss die Excel-Übersicht neu gebaut werden:
 //   python3 scripts/export-xlsx.py
 
-import { readFile, writeFile, mkdir } from 'node:fs/promises';
+import { writeFile, mkdir } from 'node:fs/promises';
 import { dirname, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
-import { textIstDualesStudium } from './ausbildungsarten.mjs';
+import { ART_DUALES_STUDIUM, textIstDualesStudium } from './ausbildungsarten.mjs';
 import { ladeBestand, speichereBestand } from './speicher.mjs';
 import { bestandAlsCsv } from './csv.mjs';
 import { PFADE } from './sammeln.mjs';
-
-/** Quellen, die von Hand gepflegt wurden — die bleiben erhalten. */
-const BA_QUELLE = 'ba-jobsuche';
 
 function argumenteLesen(argv) {
   const werte = {};
@@ -42,55 +38,44 @@ function argumenteLesen(argv) {
   return werte;
 }
 
+function istDualerBeruf(beruf) {
+  return beruf?.art === ART_DUALES_STUDIUM || textIstDualesStudium(beruf?.beruf);
+}
+
 /**
- * Entfernt die dualen Studien aus einem Bestand.
+ * Markiert duale Studien in einem Bestand. Es wird nichts gelöscht.
  * @param {{betriebe: any[]}} bestand
- * @returns {{bestand: any, entfernteBerufe: number, entfernteBetriebe: string[], behalteneBetriebe: string[]}}
+ * @returns {{bestand: any, markierteBerufe: number, nurDualeBetriebe: string[]}}
  */
 export function bereinige(bestand) {
   const betriebe = [];
-  const entfernteBetriebe = [];
-  const behalteneBetriebe = [];
-  let entfernteBerufe = 0;
+  const nurDualeBetriebe = [];
+  let markierteBerufe = 0;
 
   for (const betrieb of bestand.betriebe ?? []) {
-    const berufe = betrieb.berufe ?? [];
-    const behalten = berufe.filter((beruf) => !textIstDualesStudium(beruf.beruf));
-    entfernteBerufe += berufe.length - behalten.length;
+    const kopie = {
+      ...betrieb,
+      berufe: (betrieb.berufe ?? []).map((beruf) => ({ ...beruf })),
+    };
 
-    if (behalten.length === berufe.length) {
-      betriebe.push(betrieb);
-      continue;
+    for (const beruf of kopie.berufe) {
+      if (!istDualerBeruf(beruf) || beruf.art === ART_DUALES_STUDIUM) continue;
+      beruf.art = ART_DUALES_STUDIUM;
+      markierteBerufe += 1;
     }
 
-    betrieb.berufe = behalten;
-    betrieb.anzahlAnzeigen = behalten.reduce(
-      (summe, beruf) => summe + (beruf.anzahlAnzeigen ?? 0),
-      0,
-    );
-
-    if (behalten.length > 0) {
-      betriebe.push(betrieb);
-      continue;
+    const ausbildung = kopie.berufe.filter((beruf) => beruf.art !== ART_DUALES_STUDIUM);
+    if (kopie.berufe.length > 0 && ausbildung.length === 0) {
+      nurDualeBetriebe.push(`${kopie.arbeitgeber} (${kopie.ort})`);
     }
 
-    // Nur noch duale Studies da — für den Bestand ist der Betrieb dann
-    // kein Ausbildungsbetrieb. Aus anderen Quellen stammende Betriebe
-    // bleiben aber erhalten: die hat jemand von Hand eingetragen.
-    const quellen = betrieb.quellen ?? [];
-    if (quellen.length > 0 && quellen.every((quelle) => quelle === BA_QUELLE)) {
-      entfernteBetriebe.push(`${betrieb.arbeitgeber} (${betrieb.ort})`);
-    } else {
-      behalteneBetriebe.push(`${betrieb.arbeitgeber} (${betrieb.ort})`);
-      betriebe.push(betrieb);
-    }
+    betriebe.push(kopie);
   }
 
   return {
     bestand: { ...bestand, anzahlBetriebe: betriebe.length, betriebe },
-    entfernteBerufe,
-    entfernteBetriebe,
-    behalteneBetriebe,
+    markierteBerufe,
+    nurDualeBetriebe,
   };
 }
 
@@ -100,18 +85,13 @@ export async function bereinigeBestand({ argv = [], protokoll = console.log } = 
   const bestand = await ladeBestand(PFADE.bestand);
   const ergebnis = bereinige(bestand);
 
-  protokoll(`Berufe gesamt      : ${(bestand.betriebe ?? []).reduce((s, b) => s + (b.berufe ?? []).length, 0)}`);
-  protokoll(`Duale Studien weg : ${ergebnis.entfernteBerufe}`);
-  protokoll(`Betriebe vorher   : ${(bestand.betriebe ?? []).length}`);
-  protokoll(`Betriebe nachher  : ${ergebnis.bestand.betriebe.length}`);
+  protokoll(`Berufe gesamt             : ${(bestand.betriebe ?? []).reduce((s, b) => s + (b.berufe ?? []).length, 0)}`);
+  protokoll(`Duale Studien markiert    : ${ergebnis.markierteBerufe}`);
+  protokoll(`Betriebe                  : ${(bestand.betriebe ?? []).length}`);
+  protokoll(`davon nur duales Studium  : ${ergebnis.nurDualeBetriebe.length} (bleiben im Bestand, nicht in CSV/Excel)`);
 
-  if (ergebnis.entfernteBetriebe.length > 0) {
-    protokoll(`Betriebe ohne Ausbildung entfernt (${ergebnis.entfernteBetriebe.length}):`);
-    for (const eintrag of ergebnis.entfernteBetriebe) protokoll(`  - ${eintrag}`);
-  }
-  if (ergebnis.behalteneBetriebe.length > 0) {
-    protokoll(`Betriebe behalten, aber ohne Ausbildungsberuf (${ergebnis.behalteneBetriebe.length}):`);
-    for (const eintrag of ergebnis.behalteneBetriebe) protokoll(`  - ${eintrag}`);
+  if (ergebnis.nurDualeBetriebe.length > 0) {
+    for (const eintrag of ergebnis.nurDualeBetriebe) protokoll(`  - ${eintrag}`);
   }
 
   if (!trocken) {

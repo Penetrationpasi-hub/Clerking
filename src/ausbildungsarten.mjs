@@ -30,11 +30,18 @@ export const AUSBILDUNGSART = {
 
 /**
  * Wortstämme, an denen ein Studium erkennbar ist: Studium, Studiengang,
- * Studierende, Student, Studienplatz. „StudiumPLUS" fällt mit drin, ein
- * zusammengeschriebenes „Werkstudent" dagegen nicht — das ist eine
- * Aushilfe, kein Studium.
+ * Studienrichtung, Studierende, Student, Studienplatz. „StudiumPLUS" fällt
+ * mit drin, ein zusammengeschriebenes „Werkstudent" dagegen nicht — das ist
+ * eine Aushilfe, kein Studium.
+ *
+ * `studium` steht nicht immer am Wortanfang: „Hochschulstudium" hat davor
+ * kein Wortgrenze-Zeichen. Der Stamm `studium`/`studiengang` wird deshalb
+ * überall im Text gesucht. „Student" und „Studierende" dagegen nur am
+ * Wortanfang — sonst fiele „Werkstudent" (eine Aushilfe, kein Studium)
+ * darunter. „Studierendenwerk" und „Studentenwerk" bilden regulär aus und
+ * sind ausgenommen.
  */
-const STUDIUM_WORT = /\bstud(?:ium|engang|ierend\w*|ent\w*|ienplatz\w*)/i;
+const STUDIUM_WORT = /stud(?:ium|iengang|ienrichtung|ienplatz\w*)|\bstud(?:ierend(?!enwerk)\w*|ent(?!enwerk)\w*)/i;
 
 /**
  * Abschlussbezeichnungen, die im Titel eines Ausbildungsangebots nur im
@@ -50,6 +57,7 @@ const ABSOLUT_MUSTER = [
   /\bmasterstudium\b/i,
   /\bb\.\s?sc\./i,
   /\bb\.\s?a\./i,
+  /\bb\.\s?eng\./i,
   /\bm\.\s?sc\./i,
   /\bdhbw\b/i,
 ];
@@ -130,4 +138,27 @@ export function istDualesStudium(roh) {
  */
 export function nurAusbildungsplaetze(stellen) {
   return (stellen ?? []).filter((stelle) => !istDualesStudium(stelle));
+}
+
+/** Kennzeichnung eines Berufs, der ein duales Studium ist und kein Ausbildungsplatz. */
+export const ART_DUALES_STUDIUM = 'duales_studium';
+
+/**
+ * Markiert duale Studien, statt sie zu verwerfen.
+ *
+ * Der Bestand behält den Kontakt (für Initiativbewerbungen), CSV und Excel
+ * blenden Berufe mit dieser Kennzeichnung aus. Schon markierte Stellen
+ * bleiben markiert — ein zweiter Lauf überschreibt das nicht.
+ *
+ * @param {any[]} stellen
+ * @returns {any[]}
+ */
+export function markiereDualeStudien(stellen) {
+  return (stellen ?? []).map((stelle) => {
+    if (!stelle || typeof stelle !== 'object') return stelle;
+    if (stelle.art === ART_DUALES_STUDIUM || istDualesStudium(stelle)) {
+      return { ...stelle, art: ART_DUALES_STUDIUM };
+    }
+    return stelle;
+  });
 }

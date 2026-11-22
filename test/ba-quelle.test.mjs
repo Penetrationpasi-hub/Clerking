@@ -81,9 +81,9 @@ test('setzt angebotsart=4, ausbildungsart=0 und die Suchparameter', async () => 
   assert.equal(parameter.get('size'), '50');
 });
 
-test('sortiert duale Studien auch dann aus, wenn die BA den Parameter ignoriert', async () => {
-  // Sicherheitsnetz: der Filter in holeAlleSeiten greift auch dann, wenn die
-  // BA den Parameter ausbildungsart nicht auswertet.
+test('markiert duale Studien auch dann, wenn die BA den Parameter ignoriert', async () => {
+  // Sicherheitsnetz: die Kennzeichnung in holeAlleSeiten greift auch dann,
+  // wenn die BA den Parameter ausbildungsart nicht auswertet.
   const treffer = [
     {
       ausbildungsart: 'AUSBILDUNG',
@@ -119,10 +119,10 @@ test('sortiert duale Studien auch dann aus, wenn die BA den Parameter ignoriert'
     }),
   });
 
-  assert.equal(stellen.length, 2);
+  assert.equal(stellen.length, 3);
   assert.deepEqual(
-    stellen.map((stelle) => stelle.titel),
-    ['Ausbildung Bäcker/in', 'Ausbildung Konditor/-in'],
+    stellen.map((stelle) => stelle.art ?? 'ausbildung'),
+    ['ausbildung', 'duales_studium', 'ausbildung'],
   );
 });
 

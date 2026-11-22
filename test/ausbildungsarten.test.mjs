@@ -2,7 +2,9 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import {
   AUSBILDUNGSART,
+  ART_DUALES_STUDIUM,
   istDualesStudium,
+  markiereDualeStudien,
   nurAusbildungsplaetze,
   textIstDualesStudium,
 } from '../src/ausbildungsarten.mjs';
@@ -37,6 +39,13 @@ test('erkennt duales Studium auch dann, wenn die BA es als Ausbildung führt', (
     'Ausbildung 2027 - Primary Care Management (B. Sc.) (m/w/d)',
     'Duale:r Student:in im Bauingenieurwesen (m/w/d)',
     'DH-Student Elektrotechnik/Automation (m/w/d)',
+    // Der Stamm "stud" steht hier nicht am Wortanfang bzw. der Abschluss
+    // heißt B.Eng. — beides muss trotzdem erkannt werden.
+    'Studiengang Public Financial Management',
+    'Studiengang zum B.Eng.* im Maschinenbau in 2027',
+    'Duales Hochschulstudium BWL-Industrial Business Management',
+    'Maschinenbau mit Studienrichtung Konstruktion und Entwicklung (B.Eng.)',
+    'Angehende Pflegefachperson (m/w/d) im Studiengang Pflege',
   ];
   for (const titel of faelle) {
     assert.equal(
@@ -57,6 +66,9 @@ test('lässt reguläre Ausbildungsberufe in Ruhe', () => {
     'Ausbildung Kunststoff- und Kautschuktechnologe/-technologin - Compound- und Masterbatchherstellung',
     'Ausbildung zum/zur Elektroniker/in - Informations- und Systemtechnik',
     'Werkstudent (m/w/d) im Maschinenbau',
+    // Studierendenwerk und Studentenwerk bilden regulär aus.
+    'Ausbildung beim Studierendenwerk Stuttgart (m/w/d)',
+    'Ausbildung Koch/Köchin im Studentenwerk',
   ];
   for (const titel of faelle) {
     assert.equal(
@@ -88,6 +100,19 @@ test('filtert eine Liste auf Ausbildungsplätze', () => {
     uebrig.map((stelle) => stelle.titel),
     ['Ausbildung Bäcker/in', 'Ausbildung Kfz-Mechatroniker/in'],
   );
+});
+
+test('markiert duale Studien, statt sie zu verwerfen', () => {
+  const stellen = markiereDualeStudien([
+    { titel: 'Ausbildung Bäcker/in', ausbildungsart: 'AUSBILDUNG' },
+    { titel: 'Studiengang Public Financial Management', ausbildungsart: 'AUSBILDUNG' },
+    { titel: 'Ausbildung Koch/Köchin im Studentenwerk', ausbildungsart: 'AUSBILDUNG' },
+  ]);
+
+  assert.equal(stellen.length, 3);
+  assert.equal(stellen[0].art, undefined);
+  assert.equal(stellen[1].art, ART_DUALES_STUDIUM);
+  assert.equal(stellen[2].art, undefined);
 });
 
 test('die Codes der Ausbildungsarten passen zur BA', () => {

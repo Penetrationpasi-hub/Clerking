@@ -17,6 +17,36 @@ test('CSV hat BOM, Semikolon und alle Spalten', () => {
   assert.ok(csv.includes('Müller GmbH;Waiblingen'));
 });
 
+test('CSV blendet duale Studien aus und lässt den Betrieb weg, wenn nichts bleibt', () => {
+  const { bestand } = fuegeStellenEin(
+    leererBestand(),
+    [
+      { arbeitgeber: 'Müller GmbH', ort: 'Waiblingen', beruf: 'Bäcker/in', refnr: 'R1' },
+      {
+        arbeitgeber: 'Müller GmbH',
+        ort: 'Waiblingen',
+        beruf: 'Studiengang Public Financial Management',
+        refnr: 'R2',
+        art: 'duales_studium',
+      },
+      {
+        arbeitgeber: 'Mercedes-Benz AG',
+        ort: 'Stuttgart',
+        beruf: 'Duales Hochschulstudium BWL',
+        refnr: 'R3',
+        art: 'duales_studium',
+      },
+    ],
+    { datum: '2026-09-18', quelle: 'ba-jobsuche' },
+  );
+
+  const csv = bestandAlsCsv(bestand);
+  assert.ok(csv.includes('Bäcker/in'));
+  assert.equal(csv.includes('Studiengang'), false);
+  assert.equal(csv.includes('Mercedes-Benz'), false);
+  assert.equal(bestand.betriebe.length, 2);
+});
+
 test('Semikolon im Firmennamen zerlegt die Zeile nicht', () => {
   const { bestand } = fuegeStellenEin(
     leererBestand(),

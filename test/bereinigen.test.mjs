@@ -1,6 +1,7 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import { bereinige } from '../src/bereinigen.mjs';
+import { ART_DUALES_STUDIUM } from '../src/ausbildungsarten.mjs';
 
 function betrieb(arbeitgeber, berufe, quellen = ['ba-jobsuche']) {
   return {
@@ -17,42 +18,40 @@ function betrieb(arbeitgeber, berufe, quellen = ['ba-jobsuche']) {
   };
 }
 
-test('entfernt duale Studien aus den Berufen eines Betriebs', () => {
-  const { bestand, entfernteBerufe } = bereinige({
+test('markiert duale Studien, ohne den Ausbildungsberuf anzufassen', () => {
+  const { bestand, markierteBerufe } = bereinige({
     betriebe: [betrieb('Bäckerei Müller GmbH', ['Bäcker/in', 'Duales Studium BWL (m/w/d)'])],
   });
 
-  assert.equal(entfernteBerufe, 1);
+  assert.equal(markierteBerufe, 1);
   assert.equal(bestand.betriebe.length, 1);
-  assert.deepEqual(
-    bestand.betriebe[0].berufe.map((beruf) => beruf.beruf),
-    ['Bäcker/in'],
-  );
-  assert.equal(bestand.betriebe[0].anzahlAnzeigen, 1);
+  assert.equal(bestand.betriebe[0].berufe[0].art, undefined);
+  assert.equal(bestand.betriebe[0].berufe[1].art, ART_DUALES_STUDIUM);
+  assert.equal(bestand.betriebe[0].anzahlAnzeigen, 2);
 });
 
-test('entfernt Betriebe, die nur duale Studien hatten', () => {
-  const { bestand, entfernteBetriebe } = bereinige({
+test('behält Betriebe, die nur duale Studien hatten', () => {
+  const { bestand, nurDualeBetriebe } = bereinige({
     betriebe: [
-      betrieb('DHBW Stuttgart', ['Duales Studium BWL (m/w/d)']),
+      betrieb('Mercedes-Benz AG', ['Studiengang Public Financial Management']),
       betrieb('Bäckerei Müller GmbH', ['Bäcker/in']),
     ],
   });
 
-  assert.equal(bestand.betriebe.length, 1);
-  assert.equal(bestand.betriebe[0].arbeitgeber, 'Bäckerei Müller GmbH');
-  assert.equal(entfernteBetriebe.length, 1);
-  assert.match(entfernteBetriebe[0], /DHBW Stuttgart/);
+  assert.equal(bestand.betriebe.length, 2);
+  assert.equal(bestand.betriebe[0].berufe[0].art, ART_DUALES_STUDIUM);
+  assert.equal(nurDualeBetriebe.length, 1);
+  assert.match(nurDualeBetriebe[0], /Mercedes-Benz AG/);
 });
 
-test('behält Betriebe, die von Hand eingetragen wurden', () => {
-  const { bestand, behalteneBetriebe } = bereinige({
+test('lässt von Hand eingetragene Betriebe stehen und markiert nur das Studium', () => {
+  const { bestand, nurDualeBetriebe } = bereinige({
     betriebe: [betrieb('Firma von Hand', ['Duales Studium BWL (m/w/d)'], ['hwk-stuttgart'])],
   });
 
   assert.equal(bestand.betriebe.length, 1);
-  assert.equal(bestand.betriebe[0].berufe.length, 0);
-  assert.equal(behalteneBetriebe.length, 1);
+  assert.equal(bestand.betriebe[0].berufe[0].art, ART_DUALES_STUDIUM);
+  assert.equal(nurDualeBetriebe.length, 1);
 });
 
 test('lässt reguläre Ausbildungsberufe unangetastet', () => {
@@ -60,9 +59,20 @@ test('lässt reguläre Ausbildungsberufe unangetastet', () => {
     'Bäcker/in',
     'Konditor/in',
     'Kunststoff- und Kautschuktechnologe/-technologin - Compound- und Masterbatchherstellung',
+    'Ausbildung beim Studierendenwerk Stuttgart (m/w/d)',
   ];
-  const { bestand, entfernteBerufe } = bereinige({ betriebe: [betrieb('Betrieb GmbH', berufe)] });
+  const { bestand, markierteBerufe } = bereinige({ betriebe: [betrieb('Betrieb GmbH', berufe)] });
 
-  assert.equal(entfernteBerufe, 0);
-  assert.equal(bestand.betriebe[0].berufe.length, 3);
+  assert.equal(markierteBerufe, 0);
+  assert.equal(bestand.betriebe[0].berufe.length, 4);
+  assert.ok(bestand.betriebe[0].berufe.every((beruf) => beruf.art === undefined));
+});
+
+test('markiert einen Beruf nicht ein zweites Mal', () => {
+  const vorhanden = betrieb('Bosch', ['Duales Hochschulstudium BWL']);
+  vorhanden.berufe[0].art = ART_DUALES_STUDIUM;
+
+  const { markierteBerufe } = bereinige({ betriebe: [vorhanden] });
+
+  assert.equal(markierteBerufe, 0);
 });

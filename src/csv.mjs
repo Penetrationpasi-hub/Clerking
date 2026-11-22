@@ -5,6 +5,11 @@
 // Umlauten. Das ist keine Kosmetik — die Liste soll am Ende jemand in der
 // Maßnahme benutzen können, nicht nur ein Skript.
 
+/** Berufe, die in der Liste zum Anrufen nichts zu suchen haben. */
+function ausbildungsberufe(betrieb) {
+  return (betrieb.berufe ?? []).filter((eintrag) => eintrag.art !== 'duales_studium');
+}
+
 export const SPALTEN = [
   'Arbeitgeber',
   'Ort',
@@ -36,6 +41,14 @@ export function bestandAlsCsv(bestand) {
   const zeilen = [SPALTEN.join(';')];
 
   for (const betrieb of bestand.betriebe) {
+    const berufe = ausbildungsberufe(betrieb);
+    // Nur duale Studien: der Kontakt bleibt in betriebe.json, nicht in der
+    // Liste zum Anrufen.
+    if (berufe.length === 0) continue;
+    const anzahlAnzeigen = berufe.reduce(
+      (summe, eintrag) => summe + (eintrag.anzahlAnzeigen ?? 0),
+      0,
+    );
     zeilen.push(
       [
         betrieb.arbeitgeber,
@@ -43,9 +56,9 @@ export function bestandAlsCsv(bestand) {
         betrieb.plz,
         betrieb.strasse,
         betrieb.region,
-        (betrieb.berufe ?? []).map((eintrag) => eintrag.beruf).join(' | '),
-        (betrieb.berufe ?? []).length,
-        betrieb.anzahlAnzeigen ?? 0,
+        berufe.map((eintrag) => eintrag.beruf).join(' | '),
+        berufe.length,
+        anzahlAnzeigen,
         betrieb.erstmalsGesehen,
         betrieb.zuletztGesehen,
         (betrieb.jahre ?? []).join(' '),

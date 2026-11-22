@@ -10,7 +10,7 @@
 // Für den Fall, dass die BA den Parameter nicht kennt, wird zusätzlich nach
 // dem Abruf gefiltert.
 
-import { AUSBILDUNGSART, nurAusbildungsplaetze } from './ausbildungsarten.mjs';
+import { AUSBILDUNGSART, markiereDualeStudien } from './ausbildungsarten.mjs';
 
 export const BASIS = 'https://rest.arbeitsagentur.de/jobboerse/jobsuche-service';
 export const API_KEY = 'jobboerse-jobsuche';
@@ -209,10 +209,11 @@ export async function holeSeite({
  * die Suche über `suchbegriffe` in der Konfiguration in kleinere Scheiben —
  * pro Berufsfeld eine Abfrage.
  *
- * Duale Studien werden zweimal ausgeschlossen: einmal schon von der BA über
+ * Duale Studien werden zweimal gekennzeichnet: einmal schon von der BA über
  * den Parameter `ausbildungsart`, und danach noch einmal hier. Das ist
- * Absicht: sollte die BA den Parameter nicht kennen, kämen sonst wieder
- * Studien in den Bestand. Der zweite Durchgang läuft bewusst NACH der
+ * Absicht: sollte die BA den Parameter nicht kennen, blieben die Studien
+ * sonst unmarkiert im Bestand. Gelöscht wird nichts — CSV und Excel blenden
+ * die Kennzeichnung aus. Der zweite Durchgang läuft bewusst NACH der
  * Seiten-Schleife — würde schon pro Seite gefiltert, wäre eine Seite wegen
  * weniger Treffer unvollständig und die Suche würde zu früh enden.
  */
@@ -234,13 +235,13 @@ export async function holeAlleSeiten(optionen) {
     if (seite < maxSeiten) await warte(pauseMs);
   }
 
-  const ausbildungsplaetze = nurAusbildungsplaetze(alle);
-  const aussortiert = alle.length - ausbildungsplaetze.length;
-  if (aussortiert > 0) {
-    protokoll(`    ${aussortiert} duale Studien aussortiert`);
+  const stellen = markiereDualeStudien(alle);
+  const markiert = stellen.filter((stelle) => stelle?.art === 'duales_studium').length;
+  if (markiert > 0) {
+    protokoll(`    ${markiert} duale Studien markiert (bleiben im Bestand, nicht in CSV/Excel)`);
   }
 
-  return { stellen: ausbildungsplaetze, gesamt };
+  return { stellen, gesamt };
 }
 
 /**
