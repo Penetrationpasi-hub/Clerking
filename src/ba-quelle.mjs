@@ -50,8 +50,14 @@ function ersterWert(...kandidaten) {
  *   ausbildungsart: string|null, studienform: string|null}}
  */
 export function stelleAusRohdaten(roh) {
-  const adresse = roh?.arbeitsort ?? roh?.stellenlokationen?.[0]?.adresse ?? roh?.stellenlokationen?.[0] ?? {};
-  const koordinaten = adresse?.koordinaten ?? roh?.koordinaten ?? null;
+  const lokation = roh?.stellenlokationen?.[0];
+  const adresse = roh?.arbeitsort ?? lokation?.adresse ?? lokation ?? {};
+  // v6 liefert die Koordinaten nicht in der Adresse, sondern daneben als
+  // `breite`/`laenge` an der Stellenlokation.
+  const koordinaten =
+    adresse?.koordinaten ??
+    roh?.koordinaten ??
+    (lokation?.breite !== undefined ? { lat: lokation.breite, lon: lokation.laenge } : null);
 
   return {
     arbeitgeber: ersterWert(roh?.arbeitgeber, roh?.firma, roh?.arbeitgeberName),
@@ -74,7 +80,7 @@ export function stelleAusRohdaten(roh) {
       koordinaten && Number.isFinite(Number(koordinaten.lat)) && Number.isFinite(Number(koordinaten.lon))
         ? { lat: Number(koordinaten.lat), lon: Number(koordinaten.lon) }
         : null,
-    kundennummerHash: ersterWert(roh?.kundennummerHash) || null,
+    kundennummerHash: ersterWert(roh?.kundennummerHash, roh?.arbeitgeberKundennummerHash) || null,
     externeUrl: ersterWert(roh?.externeUrl) || null,
     // Ausbildungsart und Studienform trennen duale Studien von echten
     // Ausbildungsplätzen — sie müssen deshalb bis zum Filter erhalten bleiben.
@@ -132,6 +138,11 @@ export function ergebnisseAusAntwort(antwort) {
   return {
     stellen: Array.isArray(liste) ? liste.map(stelleAusRohdaten) : [],
     gesamt: Number.isFinite(gesamt) ? gesamt : liste.length,
+    // Wie die BA den Ort verstanden hat. "UNGUELTIG" heißt: Ort nicht
+    // erkannt, die Suche liefert still 0 Treffer (z. B. "Boeblingen" statt
+    // "Böblingen").
+    suchmodus: antwort?.woOutput?.suchmodus ?? null,
+    bereinigterOrt: antwort?.woOutput?.bereinigterOrt ?? null,
   };
 }
 
@@ -223,8 +234,15 @@ export async function holeAlleSeiten(optionen) {
   let gesamt = 0;
 
   for (let seite = 1; seite <= maxSeiten; seite += 1) {
-    const { stellen, gesamt: summe } = await holeSeite({ ...optionen, seite, groesse });
+    const { stellen, gesamt: summe, suchmodus, bereinigterOrt } = await holeSeite({ ...optionen, seite, groesse });
     gesamt = summe;
+    if (seite === 1 && suchmodus === 'UNGUELTIG') {
+      protokoll(`    ! Ort "${optionen.wo}" wird von der BA nicht erkannt - Schreibweise in konfig.json prüfen (Umlaute statt ae/oe/ue)`);
+    } else if (seite === 1 && bereinigterOrt) {
+      // Mehrdeutige Ortsnamen löst die BA nicht immer gleich auf - so landet
+      // "Schorndorf" an manchen Tagen in der Oberpfalz statt im Rems-Murr-Kreis.
+      protokoll(`    BA versteht: ${bereinigterOrt}`);
+    }
     alle.push(...stellen);
     protokoll(
       `    Seite ${seite}: ${stellen.length} Stellen (insgesamt gemeldet: ${summe})`,

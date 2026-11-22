@@ -6,7 +6,7 @@
 //   node src/sammeln.mjs --trocken            (nichts schreiben, nur zeigen)
 //   node src/sammeln.mjs --aus-datei roh.json (ohne Netz, aus Rohdaten)
 
-import { readFile, writeFile, mkdir } from 'node:fs/promises';
+import { readFile, writeFile, mkdir, appendFile } from 'node:fs/promises';
 import { dirname, join, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { ANGEBOTSART, holeAlleSeiten, ergebnisseAusAntwort, holeDetail, eintrittAusRohdaten } from './ba-quelle.mjs';
@@ -21,8 +21,29 @@ export const PFADE = {
   csv: join(PROJEKT, 'daten', 'betriebe.csv'),
   historie: join(PROJEKT, 'daten', 'historie.jsonl'),
   laufLog: join(PROJEKT, 'daten', 'letzter-lauf.json'),
+  laeufe: join(PROJEKT, 'daten', 'laeufe.jsonl'),
   eintritte: join(PROJEKT, 'daten', 'eintritte.json'),
 };
+
+/**
+ * Kennzahlen zum Markt an diesem Tag - nicht zum Bestand.
+ *
+ * `gefundeneStellen` allein taugt dafür nicht: die Umkreise der Orte in
+ * konfig.json überlappen, eine Anzeige in Fellbach kommt über Stuttgart UND
+ * Waiblingen herein und wird doppelt gezählt. Deshalb zusätzlich die
+ * eindeutigen Referenznummern, und wie viele Betriebe bzw. Betrieb+Beruf-
+ * Kombinationen heute tatsächlich eine Anzeige draußen haben.
+ */
+export function marktKennzahlen(bestand, stellen, datum) {
+  const refnrs = new Set(stellen.map((s) => String(s.refnr ?? '').trim()).filter(Boolean));
+  let aktiveBetriebe = 0;
+  let aktiveAngebote = 0;
+  for (const betrieb of bestand.betriebe) {
+    if (betrieb.zuletztGesehen === datum) aktiveBetriebe += 1;
+    for (const beruf of betrieb.berufe ?? []) if (beruf.zuletztGesehen === datum) aktiveAngebote += 1;
+  }
+  return { eindeutigeStellen: refnrs.size, aktiveBetriebe, aktiveAngebote };
+}
 
 function argumenteLesen(argv) {
   const werte = {};
@@ -168,6 +189,7 @@ export async function sammle({ argv = [], protokoll = console.log } = {}) {
   const bericht = {
     datum,
     gefundeneStellen: stellen.length,
+    ...marktKennzahlen(bestand, stellen, datum),
     betriebeVorher,
     betriebeNachher: bestand.betriebe.length,
     neueBetriebe: ereignisse.filter((e) => e.ereignis === 'neuer_betrieb').length,
@@ -181,6 +203,9 @@ export async function sammle({ argv = [], protokoll = console.log } = {}) {
     await writeFile(PFADE.csv, bestandAlsCsv(bestand), 'utf8');
     await schreibeHistorie(PFADE.historie, ereignisse);
     await writeFile(PFADE.laufLog, `${JSON.stringify(bericht, null, 2)}\n`, 'utf8');
+    // letzter-lauf.json wird jeden Tag überschrieben - laeufe.jsonl behält
+    // jeden Lauf als eigene Zeile. Das ist die Zeitreihe für die Auswertung.
+    await appendFile(PFADE.laeufe, `${JSON.stringify(bericht)}\n`, 'utf8');
   }
 
   protokoll('');

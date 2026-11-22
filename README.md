@@ -22,7 +22,15 @@ Keine Abhängigkeiten, kein `npm install` — nur Node 20 oder neuer.
 node src/sammeln.mjs --trocken   # Probelauf, schreibt nichts
 node src/sammeln.mjs             # echter Sammellauf
 npm run web                      # Liste im Browser ansehen
-npm test                         # 30 Tests
+npm test                         # 43 Tests
+```
+
+Für die Auswertung (Grafiken, Kurzbericht) zusätzlich Python 3 mit
+`matplotlib`:
+
+```bash
+pip install matplotlib openpyxl
+python3 scripts/auswertung.py    # schreibt auswertung/ und daten/angebote.csv
 ```
 
 ## Die Übersicht ansehen
@@ -52,6 +60,45 @@ pip install openpyxl
 python3 scripts/export-xlsx.py
 ```
 
+## Wie der Markt gerade läuft
+
+Die Excel-Übersicht beantwortet „wen rufe ich an". Was sie nicht zeigt: ob
+der Markt gerade zu- oder abnimmt, welche Berufe neu ausgeschrieben werden
+und wie viele Plätze noch für dieses Jahr zu haben sind.
+
+Dafür gibt es **[`auswertung/`](auswertung/)** — ein Kurzbericht mit sechs
+Grafiken, der bei jedem täglichen Lauf neu entsteht:
+
+| Grafik | Frage |
+|---|---|
+| `markt-verlauf.png` | Wächst der Markt oder schrumpft er? |
+| `zu-und-abgaenge.png` | Wie viele Angebote kommen und gehen pro Woche? |
+| `top-berufe.png` | In welchen Berufen bilden die meisten Betriebe aus? |
+| `trend-berufe.png` | Wo wird gerade neu ausgeschrieben (letzte 28 Tage)? |
+| `ausbildungsbeginn.png` | Wie viel ist noch für dieses Jahr zu haben, wie viel schon für nächstes? |
+| `top-orte.png` | Wo im Kreis sitzen die ausbildenden Betriebe? |
+
+Ein **Angebot** ist dabei ein Betrieb mit einem Beruf — nicht eine Anzeige.
+Schreibt ein Betrieb dreimal dieselbe Stelle aus, bleibt es ein Angebot. Das
+misst die Breite des Marktes statt die Werbeaktivität einzelner Ketten.
+
+Zwei Dateien liefern die Zahlen:
+
+- **`daten/laeufe.jsonl`** — eine Zeile je Sammellauf. `letzter-lauf.json`
+  wird jeden Tag überschrieben, die Zeitreihe lag bisher nur in der
+  Git-Historie. Pro Lauf stehen dort `aktiveBetriebe` und `aktiveAngebote`;
+  `gefundeneStellen` taugt für Trends nicht, weil die Umkreise in
+  `konfig.json` überlappen und dieselbe Anzeige mehrfach hereinkommt.
+- **`daten/angebote.csv`** — eine Zeile je Betrieb × Beruf, flach, ohne
+  verschachtelte Listen. Die Datei ist für Pivot-Tabellen und `pandas`
+  gedacht; `betriebe.csv` bleibt die Liste zum Anrufen.
+
+```bash
+python3 scripts/auswertung.py          # Grafiken und Bericht neu bauen
+python3 scripts/laeufe-nachtragen.py   # laeufe.jsonl aus der Git-Historie
+                                       # rekonstruieren (nur im Notfall nötig)
+```
+
 ## Was wo liegt
 
 ```
@@ -63,10 +110,14 @@ src/normalisieren.mjs Schreibweisen zusammenführen
 src/speicher.mjs     Bestand fortschreiben
 src/sammeln.mjs      Sammellauf (CLI)
 src/import-csv.mjs   Kammer-Listen einlesen
+scripts/auswertung.py Grafiken und Kurzbericht in auswertung/
 daten/betriebe.json           der Bestand — die eigentliche Sache
 daten/betriebe.csv            dasselbe als Semikolon-CSV (BOM für Excel)
+daten/angebote.csv            eine Zeile je Betrieb × Beruf (zum Auswerten)
 daten/Ausbildungsbetriebe.xlsx fertig formatierte Excel-Übersicht, täglich neu erzeugt
 daten/historie.jsonl           Protokoll: was wurde wann zum ersten Mal gesehen
+daten/laeufe.jsonl             Zeitreihe: ein Sammellauf je Zeile
+auswertung/README.md           Kurzbericht zur Marktlage mit Grafiken
 web/index.html       Ansicht zum Filtern und Exportieren
 ```
 
@@ -162,6 +213,14 @@ Datensatz.
 
 - **Anonyme Ausschreibungen** haben kein Arbeitgeberfeld und werden verworfen.
   Sie sind für Initiativbewerbungen ohnehin unbrauchbar.
+- **Ortsnamen müssen stimmen.** Die BA kennt nur die amtliche Schreibweise:
+  `Boeblingen` liefert null Treffer, `Böblingen` 2800 — und zwar ohne
+  Fehlermeldung, die Antwort ist einfach leer. Seit die Antwort auf
+  `suchmodus: UNGUELTIG` geprüft wird, steht so ein Fall als Warnung im
+  Actions-Log. Mehrdeutige Namen werden ebenfalls still aufgelöst:
+  `Schorndorf` hat zeitweise die Oberpfalz statt des Rems-Murr-Kreises
+  getroffen, deshalb steht in `konfig.json` jetzt `Schorndorf, Württemberg`.
+  Welchen Ort die BA verstanden hat, protokolliert jeder Lauf mit.
 - **Personaldienstleister** schreiben viele Ausbildungsstellen für Dritte aus.
   Die stehen dann als Betrieb im Bestand, obwohl sie nicht selbst ausbilden.
   Beim Durchgehen der Liste auffallen lassen und in `notiz` vermerken.

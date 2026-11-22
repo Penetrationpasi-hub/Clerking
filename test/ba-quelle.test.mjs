@@ -44,6 +44,28 @@ test('liest auch die alten Feldnamen (firma/stellenlokationen)', () => {
   assert.equal(stelle.refnr, '10000-1234567890-S');
 });
 
+test('liest Koordinaten und Kundennummer aus der aktuellen v6-Antwort', () => {
+  // So liefert die BA es seit v6: Koordinaten als breite/laenge neben der
+  // Adresse, die Kundennummer als arbeitgeberKundennummerHash.
+  const stelle = stelleAusRohdaten({
+    hauptberuf: 'Bäcker/in',
+    firma: 'Bäckerei Müller GmbH',
+    referenznummer: '10000-1234567890-S',
+    stellenlokationen: [
+      { adresse: { ort: 'Waiblingen, Rems', plz: '71332' }, breite: 48.86, laenge: 9.32 },
+    ],
+    arbeitgeberKundennummerHash: 'hash-v6',
+  });
+
+  assert.deepEqual(stelle.koordinaten, { lat: 48.86, lon: 9.32 });
+  assert.equal(stelle.kundennummerHash, 'hash-v6');
+});
+
+test('meldet einen Ort, den die BA nicht erkennt', () => {
+  assert.equal(ergebnisseAusAntwort({ woOutput: { suchmodus: 'UNGUELTIG' } }).suchmodus, 'UNGUELTIG');
+  assert.equal(ergebnisseAusAntwort({}).suchmodus, null);
+});
+
 test('fehlende Felder ergeben leere Strings statt undefined', () => {
   const stelle = stelleAusRohdaten({});
   assert.equal(stelle.arbeitgeber, '');

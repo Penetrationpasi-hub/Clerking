@@ -77,8 +77,13 @@ jobs:
 
       - name: Excel-Übersicht aktualisieren
         run: |
-          pip install --quiet openpyxl
+          pip install --quiet openpyxl matplotlib
           python3 scripts/export-xlsx.py
+
+      # Auch hier mitlaufen lassen: sonst steht in daten/angebote.csv und in
+      # der Auswertung noch der Stand von vor dem neuen Betrieb.
+      - name: Auswertung aktualisieren
+        run: python3 scripts/auswertung.py
 
       - name: Committen
         env:
@@ -86,7 +91,7 @@ jobs:
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git add daten
+          git add daten auswertung
           if git diff --staged --quiet; then
             echo "Keine Änderungen."
           else
