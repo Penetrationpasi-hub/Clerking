@@ -1,29 +1,29 @@
 # Ausbildungsmarkt Region Stuttgart - Auswertung
 
-Stand: **2026-11-21** · automatisch erzeugt von `scripts/auswertung.py` aus `daten/betriebe.json`
+Stand: **2026-11-22** · automatisch erzeugt von `scripts/auswertung.py` aus `daten/betriebe.json`
 und `daten/laeufe.jsonl`. Nur Betriebe in Baden-Württemberg (Region Stuttgart).
 
 ## Auf einen Blick
 
 | Kennzahl | Wert |
 |---|---:|
-| Betriebe im Bestand | 3.608 |
-| davon mit aktueller Anzeige | 2.916 |
-| davon **ohne aktuelle Anzeige** (Initiativbewerbung) | 692 |
-| aktive Angebote (Betrieb × Beruf) | 5.156 |
-| verschiedene Berufe mit aktiver Anzeige | 824 |
-| Angebote mit Beginn schon erreicht (sofort/Restplätze) | 497 |
-| Angebote für Beginn 2027 | 4.633 |
-| Betriebe mit Anzeige: 2026-09-28 → 2026-11-21 | 2.771 → 2.917 (+146) |
+| Betriebe im Bestand | 4.058 |
+| davon mit aktueller Anzeige | 3.397 |
+| davon **ohne aktuelle Anzeige** (Initiativbewerbung) | 661 |
+| aktive Angebote (Betrieb × Beruf) | 5.449 |
+| verschiedene Berufe mit aktiver Anzeige | 326 |
+| Angebote mit Beginn schon erreicht (sofort/Restplätze) | 521 |
+| Angebote für Beginn 2027 | 4.905 |
+| Betriebe mit Anzeige: 2026-09-28 → 2026-11-22 | 2.771 → 3.397 (+626) |
 
 ## Zu- und Abgänge der letzten vollen Wochen
 
 | Woche ab | neu ausgeschrieben | verschwunden | Saldo |
 |---|---:|---:|---:|
-| 19.10.2026 (KW 43) | 194 | 125 | +69 |
-| 26.10.2026 (KW 44) | 160 | 146 | +14 |
-| 02.11.2026 (KW 45) | 259 | 188 | +71 |
-| 09.11.2026 (KW 46) | 161 | 117 | +44 |
+| 19.10.2026 (KW 43) | 194 | 115 | +79 |
+| 26.10.2026 (KW 44) | 160 | 130 | +30 |
+| 02.11.2026 (KW 45) | 259 | 127 | +132 |
+| 09.11.2026 (KW 46) | 161 | 111 | +50 |
 
 ## Grafiken
 

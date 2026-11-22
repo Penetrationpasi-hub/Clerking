@@ -1,9 +1,12 @@
 {
   "datum": "2026-11-22",
-  "gefundeneStellen": 17413,
+  "gefundeneStellen": 21411,
+  "eindeutigeStellen": 6469,
+  "aktiveBetriebe": 3397,
+  "aktiveAngebote": 5449,
   "betriebeVorher": 3818,
-  "betriebeNachher": 3818,
-  "neueBetriebe": 0,
-  "neueBerufe": 0,
-  "neueAnzeigen": 0
+  "betriebeNachher": 4267,
+  "neueBetriebe": 449,
+  "neueBerufe": 290,
+  "neueAnzeigen": 856
 }
