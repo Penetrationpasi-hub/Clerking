@@ -32,8 +32,17 @@ def tage_seit(datum_str):
     return (date.today() - date(jahr, monat, tag)).days
 
 
+def ausbildungsberufe(betrieb):
+    """Duale Studien bleiben im JSON, gehören aber nicht in die Anrufliste."""
+    return [
+        eintrag
+        for eintrag in betrieb.get("berufe", [])
+        if eintrag.get("art") != "duales_studium"
+    ]
+
+
 def zeile_aus_betrieb(betrieb):
-    berufe = betrieb.get("berufe", [])
+    berufe = ausbildungsberufe(betrieb)
     tage = tage_seit(betrieb.get("zuletztGesehen"))
     return {
         "Arbeitgeber": betrieb.get("arbeitgeber", ""),
@@ -43,7 +52,7 @@ def zeile_aus_betrieb(betrieb):
         "Region": betrieb.get("region", ""),
         "Ausbildungsberufe": " | ".join(e.get("beruf", "") for e in berufe),
         "AnzahlBerufe": len(berufe),
-        "AnzahlAnzeigen": betrieb.get("anzahlAnzeigen", 0),
+        "AnzahlAnzeigen": sum(eintrag.get("anzahlAnzeigen", 0) for eintrag in berufe),
         "ErstmalsGesehen": betrieb.get("erstmalsGesehen", ""),
         "ZuletztGesehen": betrieb.get("zuletztGesehen", ""),
         "TageOhneAnzeige": tage if tage is not None else "",
@@ -64,7 +73,7 @@ def main():
     betriebe = bestand["betriebe"]
 
     zeilen = sorted(
-        (zeile_aus_betrieb(b) for b in betriebe),
+        (zeile_aus_betrieb(b) for b in betriebe if ausbildungsberufe(b)),
         key=lambda z: (z["Ort"], z["Arbeitgeber"]),
     )
     spalten = list(zeilen[0].keys()) if zeilen else list(zeile_aus_betrieb({}).keys())

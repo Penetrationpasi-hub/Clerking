@@ -57,7 +57,7 @@ test('Ergebnisliste wird unter beiden Schlüsseln gefunden', () => {
   assert.equal(ergebnisseAusAntwort({}).stellen.length, 0);
 });
 
-test('setzt angebotsart=4 und die Suchparameter', async () => {
+test('setzt angebotsart=4, ausbildungsart=0 und die Suchparameter', async () => {
   let gerufeneUrl = '';
   await holeSeite({
     wo: 'Waiblingen',
@@ -72,10 +72,58 @@ test('setzt angebotsart=4 und die Suchparameter', async () => {
 
   const parameter = new URL(gerufeneUrl).searchParams;
   assert.equal(parameter.get('angebotsart'), '4');
+  // angebotsart=4 liefert Ausbildung UND duales Studium. ausbildungsart=0
+  // blendet die dualen Studien schon in der Suche aus.
+  assert.equal(parameter.get('ausbildungsart'), '0');
   assert.equal(parameter.get('wo'), 'Waiblingen');
   assert.equal(parameter.get('umkreis'), '25');
   assert.equal(parameter.get('page'), '2');
   assert.equal(parameter.get('size'), '50');
+});
+
+test('markiert duale Studien auch dann, wenn die BA den Parameter ignoriert', async () => {
+  // Sicherheitsnetz: die Kennzeichnung in holeAlleSeiten greift auch dann,
+  // wenn die BA den Parameter ausbildungsart nicht auswertet.
+  const treffer = [
+    {
+      ausbildungsart: 'AUSBILDUNG',
+      stellenangebotsTitel: 'Ausbildung Bäcker/in',
+      hauptberuf: 'Bäcker/in',
+      firma: 'Bäckerei Müller GmbH',
+      referenznummer: '10000-1-S',
+    },
+    {
+      ausbildungsart: 'DUALES_STUDIUM',
+      stellenangebotsTitel: 'Duales Studium BWL (m/w/d)',
+      hauptberuf: 'Finanzassistent/in',
+      firma: 'DHBW Stuttgart',
+      referenznummer: '10000-2-S',
+    },
+    {
+      ausbildungsart: 'AUSBILDUNG',
+      stellenangebotsTitel: 'Ausbildung Konditor/-in',
+      hauptberuf: 'Konditor/in',
+      firma: 'Bäckerei Müller GmbH',
+      referenznummer: '10000-3-S',
+    },
+  ];
+
+  const { stellen } = await holeAlleSeiten({
+    wo: 'Waiblingen',
+    groesse: 3,
+    pauseMs: 0,
+    fetchImpl: async () => ({
+      ok: true,
+      status: 200,
+      json: async () => ({ stellenangebote: treffer, maxErgebnisse: 3 }),
+    }),
+  });
+
+  assert.equal(stellen.length, 3);
+  assert.deepEqual(
+    stellen.map((stelle) => stelle.art ?? 'ausbildung'),
+    ['ausbildung', 'duales_studium', 'ausbildung'],
+  );
 });
 
 test('wiederholt bei Serverfehlern, nicht bei 400', async () => {

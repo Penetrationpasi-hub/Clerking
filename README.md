@@ -57,6 +57,8 @@ python3 scripts/export-xlsx.py
 ```
 konfig.json          Orte und Umkreise, die abgefragt werden
 src/ba-quelle.mjs    BA-Jobsuche-API (angebotsart=4 = Ausbildung)
+src/ausbildungsarten.mjs duale Studien aus den Treffern herausfiltern
+src/bereinigen.mjs   bereits gesammelte duale Studien aus dem Bestand holen
 src/normalisieren.mjs Schreibweisen zusammenführen
 src/speicher.mjs     Bestand fortschreiben
 src/sammeln.mjs      Sammellauf (CLI)
@@ -73,6 +75,14 @@ web/index.html       Ansicht zum Filtern und Exportieren
 Jeder Lauf fragt die BA für jeden Ort in `konfig.json` ab und trägt jeden
 Treffer ein. **Gelöscht wird nie.** Verschwindet eine Anzeige, bleibt der
 Betrieb mit `zuletztGesehen` stehen — und wird damit erst richtig wertvoll.
+
+`angebotsart=4` liefert Ausbildungsplätze und duale Studien zusammen. Der
+Sammellauf setzt deshalb `ausbildungsart=0` und kennzeichnet duale Studien
+zusätzlich anhand von Feld und Titel (`art: "duales_studium"` in
+`src/ausbildungsarten.mjs`). Gelöscht wird nichts: der Kontakt bleibt für
+Initiativbewerbungen im Bestand, CSV und Excel blenden die Studien aus. Was
+schon im Bestand steht, markiert `node src/bereinigen.mjs` nach — zuerst mit
+`--trocken` nur anzeigen.
 
 Zwei Dinge, an denen so eine Sammlung sonst scheitert, sind hier gelöst:
 

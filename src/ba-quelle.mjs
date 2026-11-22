@@ -2,7 +2,15 @@
 //
 // Dieselbe Basis-URL und derselbe API-Key wie in der bereits laufenden
 // Netlify-Funktion der Hauptanwendung. Einziger inhaltlicher Unterschied:
-// angebotsart=4 (Ausbildung / duales Studium) statt 1 (Arbeit).
+// angebotsart=4 (Ausbildung) statt 1 (Arbeit).
+//
+// angebotsart=4 liefert Ausbildungsplätze UND duale Studien zusammen.
+// Deshalb kommt ein zweiter Parameter dazu: ausbildungsart=0 blendet die
+// dualen Studien schon in der Suche aus (siehe src/ausbildungsarten.mjs).
+// Für den Fall, dass die BA den Parameter nicht kennt, wird zusätzlich nach
+// dem Abruf gefiltert.
+
+import { AUSBILDUNGSART, markiereDualeStudien } from './ausbildungsarten.mjs';
 
 export const BASIS = 'https://rest.arbeitsagentur.de/jobboerse/jobsuche-service';
 export const API_KEY = 'jobboerse-jobsuche';
@@ -38,7 +46,8 @@ function ersterWert(...kandidaten) {
  * @returns {{arbeitgeber: string, ort: string, plz: string, region: string,
  *   beruf: string, titel: string, refnr: string, veroeffentlicht: string|null,
  *   eintritt: string|null, koordinaten: {lat: number, lon: number}|null,
- *   kundennummerHash: string|null, externeUrl: string|null}}
+ *   kundennummerHash: string|null, externeUrl: string|null,
+ *   ausbildungsart: string|null, studienform: string|null}}
  */
 export function stelleAusRohdaten(roh) {
   const adresse = roh?.arbeitsort ?? roh?.stellenlokationen?.[0]?.adresse ?? roh?.stellenlokationen?.[0] ?? {};
@@ -67,6 +76,10 @@ export function stelleAusRohdaten(roh) {
         : null,
     kundennummerHash: ersterWert(roh?.kundennummerHash) || null,
     externeUrl: ersterWert(roh?.externeUrl) || null,
+    // Ausbildungsart und Studienform trennen duale Studien von echten
+    // Ausbildungsplätzen — sie müssen deshalb bis zum Filter erhalten bleiben.
+    ausbildungsart: ersterWert(roh?.ausbildungsart) || null,
+    studienform: ersterWert(roh?.studienform) || null,
   };
 }
 
@@ -134,6 +147,7 @@ async function warte(ms) {
  * @param {number} [optionen.umkreis]     Radius in km
  * @param {string} [optionen.was]         Optionaler Suchbegriff/Beruf
  * @param {number} [optionen.angebotsart] Default: Ausbildung
+ * @param {number} [optionen.ausbildungsart] Default: nur klassische Ausbildung
  * @param {number} [optionen.seite]
  * @param {number} [optionen.groesse]
  * @param {typeof fetch} [optionen.fetchImpl] Für Tests injizierbar
@@ -144,6 +158,7 @@ export async function holeSeite({
   umkreis,
   was,
   angebotsart = ANGEBOTSART.AUSBILDUNG,
+  ausbildungsart = AUSBILDUNGSART.AUSBILDUNG,
   seite = 1,
   groesse = 100,
   fetchImpl = fetch,
@@ -154,6 +169,11 @@ export async function holeSeite({
   if (wo) query.set('wo', wo);
   if (umkreis) query.set('umkreis', String(umkreis));
   query.set('angebotsart', String(angebotsart));
+  // Die 0 ist ein gültiger Wert (klassische Ausbildung) — deshalb wird hier
+  // nicht auf truthy geprüft, sondern nur auf „gesetzt".
+  if (ausbildungsart !== undefined && ausbildungsart !== null) {
+    query.set('ausbildungsart', String(ausbildungsart));
+  }
   query.set('size', String(groesse));
   query.set('page', String(seite));
 
@@ -188,6 +208,14 @@ export async function holeSeite({
  * Die BA deckelt die Trefferausgabe. Wer an die Obergrenze stößt, schneidet
  * die Suche über `suchbegriffe` in der Konfiguration in kleinere Scheiben —
  * pro Berufsfeld eine Abfrage.
+ *
+ * Duale Studien werden zweimal gekennzeichnet: einmal schon von der BA über
+ * den Parameter `ausbildungsart`, und danach noch einmal hier. Das ist
+ * Absicht: sollte die BA den Parameter nicht kennen, blieben die Studien
+ * sonst unmarkiert im Bestand. Gelöscht wird nichts — CSV und Excel blenden
+ * die Kennzeichnung aus. Der zweite Durchgang läuft bewusst NACH der
+ * Seiten-Schleife — würde schon pro Seite gefiltert, wäre eine Seite wegen
+ * weniger Treffer unvollständig und die Suche würde zu früh enden.
  */
 export async function holeAlleSeiten(optionen) {
   const { maxSeiten = 40, pauseMs = 400, groesse = 100, protokoll = () => {} } = optionen;
@@ -207,7 +235,13 @@ export async function holeAlleSeiten(optionen) {
     if (seite < maxSeiten) await warte(pauseMs);
   }
 
-  return { stellen: alle, gesamt };
+  const stellen = markiereDualeStudien(alle);
+  const markiert = stellen.filter((stelle) => stelle?.art === 'duales_studium').length;
+  if (markiert > 0) {
+    protokoll(`    ${markiert} duale Studien markiert (bleiben im Bestand, nicht in CSV/Excel)`);
+  }
+
+  return { stellen, gesamt };
 }
 
 /**

@@ -8,6 +8,7 @@
 import { readFile, writeFile, mkdir, appendFile } from 'node:fs/promises';
 import { dirname } from 'node:path';
 import { betriebsSchluessel, normalisiereBeruf } from './normalisieren.mjs';
+import { ART_DUALES_STUDIUM, istDualesStudium } from './ausbildungsarten.mjs';
 
 export const BESTAND_VERSION = 1;
 
@@ -154,6 +155,12 @@ export function trageStelleEin(index, stelle, { datum, quelle }) {
       anzahlAnzeigen: 0,
       referenznummern: [],
     };
+    // Duale Studien bleiben im Bestand (der Kontakt ist für
+    // Initiativbewerbungen wertvoll), werden aber gekennzeichnet. CSV und
+    // Excel blenden `art: "duales_studium"` aus.
+    if (stelle.art === ART_DUALES_STUDIUM || istDualesStudium(stelle)) {
+      beruf.art = ART_DUALES_STUDIUM;
+    }
     betrieb.berufe.push(beruf);
     istNeuerBeruf = true;
   }

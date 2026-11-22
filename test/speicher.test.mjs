@@ -172,6 +172,30 @@ test('Ausbildungsbeginn wird pro Beruf gesammelt, ohne Dubletten', () => {
   assert.deepEqual(bestand.betriebe[0].berufe[0].ausbildungsbeginne, ['2026-09-01', '2027-09-01']);
 });
 
+test('duales Studium bleibt im Bestand und wird gekennzeichnet', () => {
+  const { bestand } = fuegeStellenEin(
+    leererBestand(),
+    [
+      stelle({ beruf: 'Bäcker/in', refnr: 'REF-1' }),
+      stelle({
+        beruf: 'Studiengang Public Financial Management',
+        titel: 'Studiengang Public Financial Management',
+        refnr: 'REF-2',
+        art: 'duales_studium',
+      }),
+    ],
+    { datum: '2026-09-18', quelle: 'ba-jobsuche' },
+  );
+
+  assert.equal(bestand.betriebe.length, 1);
+  const berufe = bestand.betriebe[0].berufe;
+  assert.equal(berufe.find((eintrag) => eintrag.beruf === 'Bäcker/in').art, undefined);
+  assert.equal(
+    berufe.find((eintrag) => eintrag.beruf.startsWith('Studiengang')).art,
+    'duales_studium',
+  );
+});
+
 test('ohne Eintrittsdatum entsteht kein leeres Feld', () => {
   const { bestand } = fuegeStellenEin(leererBestand(), [stelle()], { datum: '2026-09-18', quelle: 'ba-jobsuche' });
   assert.equal(bestand.betriebe[0].berufe[0].ausbildungsbeginne, undefined);
