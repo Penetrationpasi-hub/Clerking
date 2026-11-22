@@ -10,6 +10,7 @@ import { readFile, writeFile, mkdir } from 'node:fs/promises';
 import { dirname, join, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { ANGEBOTSART, holeAlleSeiten, ergebnisseAusAntwort, holeDetail, eintrittAusRohdaten } from './ba-quelle.mjs';
+import { AUSBILDUNGSART, nurAusbildungsplaetze } from './ausbildungsarten.mjs';
 import { ladeBestand, fuegeStellenEin, speichereBestand, schreibeHistorie } from './speicher.mjs';
 import { bestandAlsCsv } from './csv.mjs';
 
@@ -108,11 +109,17 @@ export async function sammle({ argv = [], protokoll = console.log } = {}) {
   if (typeof argumente['aus-datei'] === 'string') {
     // Offline-Modus: eine gespeicherte BA-Antwort einlesen. Nützlich zum
     // Testen und um einen fehlgeschlagenen Lauf nachzuholen, ohne die API
-    // noch einmal zu belasten.
+    // noch einmal zu belasten. Auch hier werden duale Studien aussortiert —
+    // die gespeicherte Antwort kann noch welche enthalten.
     const roh = JSON.parse(await readFile(resolve(argumente['aus-datei']), 'utf8'));
     const antworten = Array.isArray(roh) ? roh : [roh];
-    for (const antwort of antworten) stellen.push(...ergebnisseAusAntwort(antwort).stellen);
-    protokoll(`Aus Datei gelesen: ${stellen.length} Stellen`);
+    let gelesen = 0;
+    for (const antwort of antworten) {
+      const gefunden = ergebnisseAusAntwort(antwort).stellen;
+      gelesen += gefunden.length;
+      stellen.push(...nurAusbildungsplaetze(gefunden));
+    }
+    protokoll(`Aus Datei gelesen: ${gelesen} Stellen, davon ${stellen.length} Ausbildungsplätze`);
   } else {
     for (const ort of orte) {
       for (const was of suchbegriffe) {
@@ -123,6 +130,7 @@ export async function sammle({ argv = [], protokoll = console.log } = {}) {
             umkreis: ort.umkreis ?? konfig.standardUmkreis ?? 25,
             was,
             angebotsart: konfig.angebotsart ?? ANGEBOTSART.AUSBILDUNG,
+            ausbildungsart: konfig.ausbildungsart ?? AUSBILDUNGSART.AUSBILDUNG,
             groesse: konfig.seitengroesse ?? 100,
             maxSeiten,
             pauseMs: konfig.pauseMs ?? 400,

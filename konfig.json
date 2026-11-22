@@ -11,6 +11,7 @@
   ],
   "standardUmkreis": 25,
   "angebotsart": 4,
+  "ausbildungsart": 0,
   "seitengroesse": 100,
   "maxSeiten": 40,
   "pauseMs": 400,
