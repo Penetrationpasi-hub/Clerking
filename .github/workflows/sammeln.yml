@@ -39,14 +39,19 @@ jobs:
 
       - name: Excel-Übersicht bauen
         run: |
-          pip install --quiet openpyxl
+          pip install --quiet openpyxl matplotlib
           python3 scripts/export-xlsx.py
+
+      # Grafiken und Kurzbericht aus demselben Stand - sonst zeigt die
+      # Auswertung im Repository Zahlen von gestern neben Daten von heute.
+      - name: Auswertung und Grafiken bauen
+        run: python3 scripts/auswertung.py
 
       - name: Neue Betriebe committen
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git add daten
+          git add daten auswertung
           if git diff --staged --quiet; then
             echo "Keine Änderungen – nichts zu committen."
           else
