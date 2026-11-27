@@ -1,20 +1,20 @@
 # Ausbildungsmarkt Region Stuttgart - Auswertung
 
-Stand: **2026-11-26** · automatisch erzeugt von `scripts/auswertung.py` aus `daten/betriebe.json`
+Stand: **2026-11-27** · automatisch erzeugt von `scripts/auswertung.py` aus `daten/betriebe.json`
 und `daten/laeufe.jsonl`. Nur Betriebe in Baden-Württemberg (Region Stuttgart).
 
 ## Auf einen Blick
 
 | Kennzahl | Wert |
 |---|---:|
-| Betriebe im Bestand | 4.100 |
-| davon mit aktueller Anzeige | 3.395 |
-| davon **ohne aktuelle Anzeige** (Initiativbewerbung) | 705 |
-| aktive Angebote (Betrieb × Beruf) | 5.456 |
+| Betriebe im Bestand | 4.115 |
+| davon mit aktueller Anzeige | 3.396 |
+| davon **ohne aktuelle Anzeige** (Initiativbewerbung) | 719 |
+| aktive Angebote (Betrieb × Beruf) | 5.468 |
 | verschiedene Berufe mit aktiver Anzeige | 322 |
-| Angebote mit Beginn schon erreicht (sofort/Restplätze) | 505 |
-| Angebote für Beginn 2027 | 4.928 |
-| Betriebe mit Anzeige: 2026-09-28 → 2026-11-26 | 2.771 → 3.395 (+624) |
+| Angebote mit Beginn schon erreicht (sofort/Restplätze) | 486 |
+| Angebote für Beginn 2027 | 4.958 |
+| Betriebe mit Anzeige: 2026-09-28 → 2026-11-27 | 2.771 → 3.396 (+625) |
 
 ## Zu- und Abgänge der letzten vollen Wochen
 
